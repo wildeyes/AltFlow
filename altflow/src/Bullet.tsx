@@ -33,11 +33,21 @@ class BulletCls {
 	set parent(parent: BulletType | undefined) {
 		this._parent = parent
 	}
+	get index() {
+		return this.parentList.indexOf(this)
+	}
 	get parent(): BulletType | undefined {
 		return this._parent
 	}
 	get parentList() {
 		return (this.parent && this.parent.children) || this.firstList
+	}
+	get nextSibling() {
+		if (this.index + 1 < this.parentList.length)
+			return this.parentList[this.index + 1]
+	}
+	get previousSibling() {
+		if (this.index - 1 >= 0) return this.parentList[this.index - 1]
 	}
 
 	handleKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
@@ -84,7 +94,7 @@ class BulletCls {
 					} else {
 						if (index === 0) return animateNope()
 						movedBullet = parentList.splice(index, 1)[0]
-						movedBullet.parent = parentList[parentList.length - 1]
+						movedBullet.parent = parentList[index - 1]
 						parentList[index - 1].children.push(movedBullet)
 					}
 					movedBullet.shouldFocus = shouldFocus
@@ -97,6 +107,7 @@ class BulletCls {
 						if (!parent) return animateNope()
 						parent.getDOMElement().focus()
 					} else {
+						// TODO refactor work with next/previous sibling?
 						if (!parentList[index - 1].children.length) {
 							parentList[index - 1].getDOMElement().focus()
 						} else {
@@ -113,11 +124,17 @@ class BulletCls {
 			[
 				KeyCode.DOWN,
 				() => {
-					if (index === parentList.length - 1) {
+					if (this.children.length) this.children[0].getDOMElement().focus()
+					else if (index >= parentList.length - 1) {
 						if (!parent) return animateNope()
-						// let almostSibling =
-
-						parent.getDOMElement().focus()
+						let currentParent = parent
+						let almostSibling = parent.nextSibling
+						while (currentParent && !almostSibling) {
+							if (!currentParent.parent) return animateNope()
+							currentParent = currentParent.parent
+							almostSibling = currentParent.nextSibling
+						}
+						almostSibling!.getDOMElement().focus()
 					} else {
 						parentList[index + 1].getDOMElement().focus()
 					}

@@ -16,7 +16,7 @@ const App: React.FC = observer(() => {
 	return (
 		<div className="App">
 			<header className="header">
-				<button className="star">Star</button>
+				<button className="starred">starred</button>
 				<button className="showCompleted">Show completed</button>
 				<button className="rtl">RTL</button>
 				<button className="search">search</button>
