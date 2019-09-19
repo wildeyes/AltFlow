@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Bullet as BulletEle, BulletType, createBulletCreator } from './Bullet'
 import './index.scss'
 
@@ -10,9 +10,11 @@ const data = observable({
 
 const Bullet = createBulletCreator(data.list)
 
-data.list.push(Bullet())
-
 const App: React.FC = observer(() => {
+	useEffect(() => {
+		if (data.list.length === 0) data.list.push(Bullet())
+	}, [data.list.length])
+
 	return (
 		<div className="App">
 			<header className="header">

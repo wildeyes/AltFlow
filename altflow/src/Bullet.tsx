@@ -42,12 +42,51 @@ class BulletCls {
 	get parentList() {
 		return (this.parent && this.parent.children) || this.firstList
 	}
-	get nextSibling() {
+	get nextImmediateSibling() {
 		if (this.index + 1 < this.parentList.length)
 			return this.parentList[this.index + 1]
 	}
-	get previousSibling() {
+	get previousImmediateSibling() {
 		if (this.index - 1 >= 0) return this.parentList[this.index - 1]
+	}
+	get nextSibling() {
+		const { index, children, parent, parentList } = this
+		if (children.length) return children[0]
+		else if (index >= parentList.length - 1) {
+			if (!parent) return animateNope()
+			let currentParent = parent
+			let almostSibling = parent.nextImmediateSibling
+			while (currentParent && !almostSibling) {
+				if (!currentParent.parent) return animateNope()
+				currentParent = currentParent.parent
+				almostSibling = currentParent.nextImmediateSibling
+			}
+			return almostSibling!
+		} else {
+			return parentList[index + 1]
+		}
+	}
+	get previousSibling() {
+		const { index, parent, previousImmediateSibling } = this
+		if (index === 0) {
+			if (!parent) return animateNope()
+			return parent
+		} else {
+			const prev = previousImmediateSibling! // guarded by index === 0
+			if (!prev.children.length) {
+				return prev
+			} else {
+				let almostSibling = prev
+				while (almostSibling.children.length) {
+					let { children } = almostSibling
+					almostSibling = children[children.length - 1]
+				}
+				return almostSibling
+			}
+		}
+	}
+	focus() {
+		this.getDOMElement().focus()
 	}
 
 	handleKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
@@ -63,7 +102,6 @@ class BulletCls {
 			selectionEnd: _end,
 			selectionDirection: _direction,
 		} = currentTarget
-		const { parentList, parent } = this
 		const start = _start || 0
 		const end = _end || 0
 		const direction = _direction || 'none'
@@ -72,6 +110,7 @@ class BulletCls {
 			[
 				KeyCode.ENTER,
 				() => {
+					const { parentList, parent } = this
 					const bullet = new BulletCls(this.firstList, {
 						shouldFocus: true,
 						parent,
@@ -82,6 +121,7 @@ class BulletCls {
 			[
 				KeyCode.TAB,
 				() => {
+					const { parentList, parent } = this
 					let movedBullet
 					if (shiftKey) {
 						if (!parent) return animateNope()
@@ -103,50 +143,49 @@ class BulletCls {
 			[
 				KeyCode.UP,
 				() => {
-					if (index === 0) {
-						if (!parent) return animateNope()
-						parent.getDOMElement().focus()
-					} else {
-						// TODO refactor work with next/previous sibling?
-						if (!parentList[index - 1].children.length) {
-							parentList[index - 1].getDOMElement().focus()
-						} else {
-							let almostSibling = parentList[index - 1]
-							while (almostSibling.children.length) {
-								let { children } = almostSibling
-								almostSibling = children[children.length - 1]
-							}
-							almostSibling.getDOMElement().focus()
-						}
-					}
+					const { previousSibling } = this
+					if (previousSibling) previousSibling.focus()
+					else animateNope()
 				},
 			],
 			[
 				KeyCode.DOWN,
 				() => {
-					if (this.children.length) this.children[0].getDOMElement().focus()
-					else if (index >= parentList.length - 1) {
-						if (!parent) return animateNope()
-						let currentParent = parent
-						let almostSibling = parent.nextSibling
-						while (currentParent && !almostSibling) {
-							if (!currentParent.parent) return animateNope()
-							currentParent = currentParent.parent
-							almostSibling = currentParent.nextSibling
+					const { nextSibling } = this
+					if (nextSibling) nextSibling.focus()
+					else animateNope()
+				},
+			],
+			[
+				KeyCode.BACKSPACE,
+				() => {
+					const { parentList } = this
+					if (!this.title.length) {
+						if (this.previousSibling) {
+							this.previousSibling.focus()
+							parentList.splice(index, 1)
+						} else if (this.nextImmediateSibling) {
+							this.nextImmediateSibling.focus()
+							parentList.splice(index, 1)
+						} else if (this.children.length) {
+							// TBD make children[0] new parent
+						} else {
+							animateNope()
 						}
-						almostSibling!.getDOMElement().focus()
-					} else {
-						parentList[index + 1].getDOMElement().focus()
+						return
 					}
+					return true
 				},
 			],
 		]
 		for (const [kbs, fn] of maps) {
 			if (kbs === keyCode) {
-				event.stopPropagation()
-				event.preventDefault()
-				fn()
-				return false
+				const stopPreventAndEverything = !Boolean(fn())
+				if (stopPreventAndEverything) {
+					event.stopPropagation()
+					event.preventDefault()
+				}
+				return stopPreventAndEverything
 			}
 		}
 	}
