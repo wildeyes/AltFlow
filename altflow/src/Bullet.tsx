@@ -10,18 +10,44 @@ export type BulletType = BulletCls
 
 export type Selection = [number, number, 'forward' | 'backward' | 'none']
 
-class BulletCls {
+export type BaseBulletCls = {
+	title: string
+	desc: string
+	created: string
+	modified: string
+	starred: boolean
+	children: BaseBulletCls[]
+}
+
+export class BulletCls {
 	private firstList: BulletType[]
 	public shouldFocus: boolean | Selection
 	constructor(
 		firstList: BulletType[],
-		{ shouldFocus = false, title = '', parent }: Partial<BulletType> = {}
+		{
+			shouldFocus = false,
+
+			title = '',
+			desc = '',
+			created = new Date(),
+			modified = new Date(),
+			starred = false,
+			children = [],
+			parent = undefined,
+		}: Partial<BulletType> = {}
 	) {
 		this.title = title
+		this.desc = desc
+		this.created = created
+		this.modified = modified
+		this.starred = starred
+		this.children = children
+		// private
 		this.firstList = firstList
 		this._parent = parent
 		this.shouldFocus = shouldFocus
 	}
+
 	@observable title = ''
 	@observable desc = ''
 	@observable created = new Date()
@@ -197,13 +223,47 @@ class BulletCls {
 			`[data-id="${this.getIdString()}"]`
 		)!
 	}
+	/**
+	 * override JSON.stringify
+	 */
+	toJSON() {
+		const { title, desc, created, modified, starred, children } = this
+		return {
+			title,
+			desc,
+			created,
+			modified,
+			starred,
+			children,
+		}
+	}
+	/**
+	 * base method for rehydration from localstorage
+	 */
+	static fromJSON(
+		firstList: any,
+		d: BaseBulletCls,
+		parent: BulletCls | undefined
+	) {
+		const b = new BulletCls(firstList, {
+			...d,
+			created: new Date(d.created),
+			modified: new Date(d.modified),
+			children: [],
+			parent,
+		})
+
+		b.children = d.children.map(d => BulletCls.fromJSON(firstList, d, b))
+
+		return b
+	}
 }
 
 function animateNope() {
 	console.log('TBD cute animation showing you cant do that')
 }
 
-export const Bullet = observer(
+export const BulletEle = observer(
 	({ index, bullet }: { index: number; bullet: BulletType }) => {
 		const ref = useRef<HTMLInputElement>(null)
 		useEffect(() => {
@@ -217,22 +277,25 @@ export const Bullet = observer(
 			}
 		})
 		return (
-			<li className="bullet">
-				<input
-					data-id={bullet.getIdString()}
-					type="text"
-					value={bullet.title}
-					onChange={({ currentTarget: { value } }) => (bullet.title = value)}
-					onKeyDown={event => bullet.handleKeyDown(index, event)}
-					ref={ref}
-				/>
-				{Boolean(bullet.children.length) && (
-					<ul>
-						{bullet.children.map((b, i) => (
-							<Bullet index={i} bullet={b} key={i} />
-						))}
-					</ul>
-				)}
+			<li className="bullet-container">
+				<div className="bullet__content">
+					<div className="bullet__bullet" />
+					<input
+						className="bullet__title"
+						data-id={bullet.getIdString()}
+						value={bullet.title}
+						onChange={({ currentTarget: { value } }) => (bullet.title = value)}
+						onKeyDown={event => bullet.handleKeyDown(index, event)}
+						ref={ref}
+					/>
+					{Boolean(bullet.children.length) && (
+						<ul>
+							{bullet.children.map((b, i) => (
+								<BulletEle index={i} bullet={b} key={i} />
+							))}
+						</ul>
+					)}
+				</div>
 			</li>
 		)
 	}

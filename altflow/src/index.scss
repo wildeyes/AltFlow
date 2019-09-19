@@ -18,10 +18,63 @@ code {
   margin-left: auto;
 }
 .content {
+  min-height: calc(100vh - 146px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  // user-select: none;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  padding-left: 60px;
+  padding-right: 60px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  margin-top: 72px;
+  margin-bottom: 24px;
+  text-size-adjust: none;
+  background: rgb(255, 255, 255);
+  border-radius: 6px;
   input {
     padding: 0;
     border: 0;
     display: flex;
     outline: none;
+    font-size: 16px;
+  }
+  li {
+    list-style: none;
+  }
+}
+.bullet-container {
+  min-height: 30px;
+}
+.bullet__content {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  justify-content: flex-start;
+  align-items: center;
+
+  grid-template-rows: 30px 1fr;
+}
+.bullet__title {
+  white-space: pre-wrap;
+  line-height: 24px;
+  padding-top: 4px;
+  overflow-wrap: break-word;
+  position: relative;
+  user-select: text;
+  margin-left: 15px;
+}
+
+.bullet__bullet {
+  background-color: black;
+  width: 7px;
+  height: 7px;
+  border-radius: 100%;
+  justify-self: center;
+  &:hover {
+    border: 4px solid grey;
   }
 }

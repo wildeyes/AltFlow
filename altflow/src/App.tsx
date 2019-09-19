@@ -1,19 +1,43 @@
-import { observable } from 'mobx'
+import { observable, reaction, toJS, autorun } from 'mobx'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
-import { Bullet as BulletEle, BulletType, createBulletCreator } from './Bullet'
+import {
+	BulletEle,
+	BulletType,
+	createBulletCreator,
+	BulletCls,
+	BaseBulletCls,
+} from './Bullet'
 import './index.scss'
 
-const data = observable({
-	list: [] as BulletType[],
-})
+class Store {
+	@observable list = [] as BulletType[]
+}
 
-const Bullet = createBulletCreator(data.list)
+const store = new Store()
+
+const Bullet = createBulletCreator(store.list)
+const data = JSON.parse(window.localStorage.getItem('__altflow') || '""')
+
+if (data && data.length) {
+	console.log('Loaded data...', data)
+	;(data as any[]).forEach((d: BaseBulletCls) =>
+		store.list.push(BulletCls.fromJSON(store.list, d, undefined))
+	)
+}
+
+;(window as any)['store'] = store
+autorun(() => {
+	window.localStorage.setItem('__altflow', JSON.stringify(store.list))
+})
 
 const App: React.FC = observer(() => {
 	useEffect(() => {
-		if (data.list.length === 0) data.list.push(Bullet())
-	}, [data.list.length])
+		if (store.list.length === 0) {
+			console.log('Inserting dummy data.')
+			store.list.push(Bullet({ title: 'Hello World!' }))
+		}
+	})
 
 	return (
 		<div className="App">
@@ -26,7 +50,7 @@ const App: React.FC = observer(() => {
 			</header>
 			<section className="content">
 				<ul>
-					{data.list.map((b, i) => (
+					{store.list.map((b, i) => (
 						<BulletEle index={i} bullet={b} key={i} />
 					))}
 				</ul>
