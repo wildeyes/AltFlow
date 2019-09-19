@@ -1,0 +1,22 @@
+image: node:alpine
+
+stages:
+  - deploy
+
+cache:
+  untracked: true
+  key: '$CI_PROJECT_ID'
+  paths:
+    - node_modules/
+    - _site/vendor/
+    - .bundled/
+    - .yarn
+
+pages:
+  stage: deploy
+  script:
+    - yarn install --pure-lockfile --cache-folder .yarn
+    - yarn build
+  artifacts:
+    paths:
+      - public
