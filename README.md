@@ -1,2 +1,2 @@
-# Loveflowy
+# AltFlow
 Workflowy clone
