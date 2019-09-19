@@ -79,28 +79,40 @@ function handleKeyDown(event: KeyboardEvent<HTMLInputElement>, target: Bullet) {
 	} = event
 	const id = parseInt(dataset.id!)
 	const { parentList, parentRef } = target
-	// prettier-ignore
+
 	const maps: [number, () => void][] = [
-    [KeyCode.ENTER, () => {
-			parentList.push(new Bullet('', parentRef || undefined))
-		},],
-		[KeyCode.TAB, ()=> {
-      if (shiftKey) {
-        if(!parentRef) return console.log('TBD cute animation showing you cant do that')
-        const deleted = parentList.splice(id, 1)[0]
-        const grandpaRef = parentRef.parentRef
-        const grandpaList = parentRef.parentList
-        const parentId = grandpaList.indexOf(parentRef)
-        deleted.parentRef = (grandpaRef)
-        grandpaList.splice(parentId + 1, 0, target)
-			} else {
-        if (id === 0) return console.log('TBD cute animation showing you cant do that')
-        const deleted = parentList.splice(id, 1)[0]
-        deleted.parentRef = (parentList[parentList.length - 1])
-				parentList[id - 1].children.push(deleted)
-			}
-		}],
-  ]
+		[
+			KeyCode.ENTER,
+			() => {
+				parentList.push(new Bullet('', parentRef || undefined))
+			},
+		],
+		[
+			KeyCode.TAB,
+			() => {
+				if (shiftKey) {
+					if (!parentRef) return animateNope()
+					const deleted = parentList.splice(id, 1)[0]
+					const grandpaRef = parentRef.parentRef
+					const grandpaList = parentRef.parentList
+					const parentId = grandpaList.indexOf(parentRef)
+					deleted.parentRef = grandpaRef
+					grandpaList.splice(parentId + 1, 0, target)
+				} else {
+					if (id === 0) return animateNope()
+					const deleted = parentList.splice(id, 1)[0]
+					deleted.parentRef = parentList[parentList.length - 1]
+					parentList[id - 1].children.push(deleted)
+				}
+			},
+		],
+		[
+			KeyCode.UP,
+			() => {
+				if (id === 0 && !parentRef) return animateNope()
+			},
+		],
+	]
 	for (const [kbs, fn] of maps) {
 		if (kbs === keyCode) {
 			fn()
@@ -109,6 +121,10 @@ function handleKeyDown(event: KeyboardEvent<HTMLInputElement>, target: Bullet) {
 			return false
 		}
 	}
+}
+
+function animateNope() {
+	console.log('TBD cute animation showing you cant do that')
 }
 
 export default App
