@@ -289,7 +289,7 @@ export const BulletEle = observer(
 						ref={ref}
 					/>
 					{Boolean(bullet.children.length) && (
-						<ul>
+						<ul className="bullet__children">
 							{bullet.children.map((b, i) => (
 								<BulletEle index={i} bullet={b} key={i} />
 							))}
