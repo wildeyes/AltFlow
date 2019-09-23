@@ -49,6 +49,18 @@ code {
 }
 .bullet-container {
   min-height: 30px;
+  color: rgb(42, 49, 53);
+  input {
+    color: rgb(42, 49, 53);
+  }
+
+  &.completed {
+    color: #a8aeb1;
+    input {
+      color: #a8aeb1;
+    }
+    text-decoration: line-through;
+  }
 }
 .bullet__content {
   display: grid;
@@ -65,6 +77,8 @@ code {
   position: relative;
   user-select: text;
   margin-inline-start: 15px;
+  animation-delay: 0.3s;
+  animation-iteration-count: 1;
 }
 
 .bullet__bullet {

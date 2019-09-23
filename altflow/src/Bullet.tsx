@@ -2,6 +2,9 @@ import { IObservableObject, observable, reaction } from 'mobx'
 import React, { Ref, useRef, KeyboardEvent, useEffect } from 'react'
 import { KeyCode } from './KeyCodes'
 import { observer } from 'mobx-react-lite'
+import classnames from 'classnames'
+import 'animate.css'
+import { animateRtl } from './common'
 
 export const createBulletCreator = (firstList: BulletType[]) => {
 	return (args?: Partial<BulletType>) => new BulletCls(firstList, args)
@@ -53,6 +56,7 @@ export class BulletCls {
 	@observable created = new Date()
 	@observable modified = new Date()
 	@observable starred = false
+	@observable completed = false
 	@observable children: BulletType[] = []
 
 	private _parent?: BulletType = undefined
@@ -121,6 +125,7 @@ export class BulletCls {
 			keyCode,
 			// altKey,
 			shiftKey,
+			ctrlKey,
 		} = event
 		const {
 			dataset,
@@ -136,12 +141,22 @@ export class BulletCls {
 			[
 				KeyCode.ENTER,
 				() => {
-					const { parentList, parent } = this
-					const bullet = new BulletCls(this.firstList, {
-						shouldFocus: true,
-						parent,
-					})
-					parentList.splice(index + 1, 0, bullet)
+					if (ctrlKey) {
+						this.completed = true
+						;(function recurse(b: BulletCls) {
+							b.children.forEach(bb => {
+								bb.completed = true
+								recurse(bb)
+							})
+						})(this)
+					} else {
+						const { parentList, parent } = this
+						const bullet = new BulletCls(this.firstList, {
+							shouldFocus: true,
+							parent,
+						})
+						parentList.splice(index + 1, 0, bullet)
+					}
 				},
 			],
 			[
@@ -264,7 +279,15 @@ function animateNope() {
 }
 
 export const BulletEle = observer(
-	({ index, bullet }: { index: number; bullet: BulletType }) => {
+	({
+		index,
+		bullet,
+		rtl,
+	}: {
+		index: number
+		rtl: boolean
+		bullet: BulletType
+	}) => {
 		const ref = useRef<HTMLInputElement>(null)
 		useEffect(() => {
 			if (bullet.shouldFocus) {
@@ -276,12 +299,20 @@ export const BulletEle = observer(
 				bullet.shouldFocus = false
 			}
 		})
+
 		return (
-			<li className="bullet-container">
+			<li
+				className={classnames('bullet-container', {
+					['completed']: bullet.completed,
+					starred: bullet.starred,
+				})}
+			>
 				<div className="bullet__content">
 					<div className="bullet__bullet" />
 					<input
-						className="bullet__title"
+						className={classnames('bullet__title', {
+							[`animated ${animateRtl('fadeOut', rtl)}`]: bullet.completed,
+						})}
 						data-id={bullet.getIdString()}
 						value={bullet.title}
 						onChange={({ currentTarget: { value } }) => (bullet.title = value)}
@@ -291,7 +322,7 @@ export const BulletEle = observer(
 					{Boolean(bullet.children.length) && (
 						<ul className="bullet__children">
 							{bullet.children.map((b, i) => (
-								<BulletEle index={i} bullet={b} key={i} />
+								<BulletEle rtl={rtl} index={i} bullet={b} key={i} />
 							))}
 						</ul>
 					)}

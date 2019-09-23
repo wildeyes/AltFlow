@@ -37,7 +37,7 @@ const App: React.FC = observer(() => {
 			>
 				<ul>
 					{store.list.map((b, i) => (
-						<BulletEle index={i} bullet={b} key={i} />
+						<BulletEle rtl={store.rtl} index={i} bullet={b} key={i} />
 					))}
 				</ul>
 			</section>
