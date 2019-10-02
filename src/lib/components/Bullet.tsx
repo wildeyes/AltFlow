@@ -1,10 +1,10 @@
-import { IObservableObject, observable, reaction } from 'mobx'
-import React, { Ref, useRef, KeyboardEvent, useEffect } from 'react'
-import { KeyCode } from './KeyCodes'
-import { observer } from 'mobx-react-lite'
-import classnames from 'classnames'
 import 'animate.css'
-import { animateRtl } from './common'
+import classnames from 'classnames'
+import { observable } from 'mobx'
+import { observer } from 'mobx-react-lite'
+import React, { KeyboardEvent, useEffect, useRef } from 'react'
+import { KeyCode } from '../browser/KeyCodes'
+import { animateRtl } from '../common'
 
 export const createBulletCreator = (firstList: BulletType[]) => {
 	return (args?: Partial<BulletType>) => new BulletCls(firstList, args)
@@ -73,11 +73,12 @@ export class BulletCls {
 		return (this.parent && this.parent.children) || this.firstList
 	}
 	get nextImmediateSibling() {
-		if (this.index + 1 < this.parentList.length)
-			return this.parentList[this.index + 1]
+		return this.index + 1 < this.parentList.length
+			? this.parentList[this.index + 1]
+			: undefined
 	}
 	get previousImmediateSibling() {
-		if (this.index - 1 >= 0) return this.parentList[this.index - 1]
+		return this.index - 1 >= 0 ? this.parentList[this.index - 1] : undefined
 	}
 	get nextSibling() {
 		const { index, children, parent, parentList } = this
@@ -128,7 +129,6 @@ export class BulletCls {
 			ctrlKey,
 		} = event
 		const {
-			dataset,
 			selectionStart: _start,
 			selectionEnd: _end,
 			selectionDirection: _direction,
@@ -303,7 +303,7 @@ export const BulletEle = observer(
 		return (
 			<li
 				className={classnames('bullet-container', {
-					['completed']: bullet.completed,
+					completed: bullet.completed,
 					starred: bullet.starred,
 				})}
 			>

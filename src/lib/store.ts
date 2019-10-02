@@ -4,7 +4,7 @@ import {
 	createBulletCreator,
 	BaseBulletCls,
 	BulletCls,
-} from './Bullet'
+} from './components/Bullet'
 import { localstorageKey } from './common'
 
 class Store {

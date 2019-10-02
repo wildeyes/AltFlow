@@ -1,16 +1,8 @@
-import { observable, reaction, toJS, autorun } from 'mobx'
 import { observer } from 'mobx-react'
-import React, { useEffect, useState } from 'react'
-import {
-	BulletEle,
-	BulletType,
-	createBulletCreator,
-	BulletCls,
-	BaseBulletCls,
-} from './Bullet'
-import './index.scss'
-import { localstorageKey } from './common'
-import { store, Bullet } from './store'
+import React, { useEffect } from 'react'
+import './App.scss'
+import { BulletEle } from './lib/components/Bullet'
+import { Bullet, store } from './lib/store'
 
 const App: React.FC = observer(() => {
 	useEffect(() => {
