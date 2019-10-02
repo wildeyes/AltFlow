@@ -1,3 +1,5 @@
+@import "./lib/common.scss";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -46,53 +48,6 @@ code {
   li {
     list-style: none;
   }
-}
-.bullet-container {
-  min-height: 30px;
-  color: rgb(42, 49, 53);
-  input {
-    color: rgb(42, 49, 53);
-  }
-
-  &.completed {
-    color: #a8aeb1;
-    input {
-      color: #a8aeb1;
-    }
-    text-decoration: line-through;
-  }
-}
-.bullet__content {
-  display: grid;
-  align-items: center;
-  grid-template-rows: 30px 1fr;
-  grid-template-columns: 20px 1fr;
-  justify-content: flex-start;
-}
-.bullet__title {
-  white-space: pre-wrap;
-  line-height: 24px;
-  padding-top: 4px;
-  overflow-wrap: break-word;
-  position: relative;
-  user-select: text;
-  margin-inline-start: 15px;
-  animation-delay: 0.3s;
-  animation-iteration-count: 1;
-}
-
-.bullet__bullet {
-  background-color: black;
-  width: 7px;
-  height: 7px;
-  border-radius: 100%;
-  justify-self: center;
-  &:hover {
-    border: 4px solid grey;
-  }
-}
-.bullet__children {
-  grid-column: span 2 / auto;
 }
 
 // mixins

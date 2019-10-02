@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import './App.scss'
-import { BulletEle } from './lib/components/Bullet'
-import { Bullet, store } from './lib/store'
+import { LineEle } from './lib/components/Line/Line'
+import { Line, store } from './lib/store'
 
 const App: React.FC = observer(() => {
 	useEffect(() => {
 		if (store.list.length === 0) {
 			console.log('Inserting dummy data.')
-			store.list.push(Bullet({ title: 'Hello World!' }))
+			store.list.push(Line({ title: 'Hello World!' }))
 		}
 	})
 
@@ -29,7 +29,7 @@ const App: React.FC = observer(() => {
 			>
 				<ul>
 					{store.list.map((b, i) => (
-						<BulletEle rtl={store.rtl} index={i} bullet={b} key={i} />
+						<LineEle rtl={store.rtl} index={i} line={b} key={i} />
 					))}
 				</ul>
 			</section>

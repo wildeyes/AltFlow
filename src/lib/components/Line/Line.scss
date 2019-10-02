@@ -1,0 +1,49 @@
+@import "../../common.scss";
+
+.line__container {
+  min-height: 30px;
+  color: rgb(42, 49, 53);
+  input {
+    color: rgb(42, 49, 53);
+  }
+
+  &.completed {
+    color: #a8aeb1;
+    input {
+      color: #a8aeb1;
+    }
+    text-decoration: line-through;
+  }
+}
+.line__content {
+  display: grid;
+  align-items: center;
+  grid-template-rows: 30px 1fr;
+  grid-template-columns: 20px 1fr;
+  justify-content: flex-start;
+}
+.line__title {
+  white-space: pre-wrap;
+  line-height: 24px;
+  padding-top: 4px;
+  overflow-wrap: break-word;
+  position: relative;
+  user-select: text;
+  margin-inline-start: 15px;
+  animation-delay: 0.3s;
+  animation-iteration-count: 1;
+}
+
+.line__bullet {
+  background-color: $bullet;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  justify-self: center;
+  &:hover {
+    border: 5px solid $bullet-hover;
+  }
+}
+.line__children {
+  grid-column: span 2 / auto;
+}

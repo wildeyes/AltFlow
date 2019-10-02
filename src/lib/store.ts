@@ -1,19 +1,19 @@
 import { observable, autorun } from 'mobx'
 import {
-	BulletType,
-	createBulletCreator,
-	BaseBulletCls,
-	BulletCls,
-} from './components/Bullet'
+	LineType,
+	createLineCreator,
+	BaseLineCls,
+	LineCls,
+} from './components/Line/Line'
 import { localstorageKey } from './common'
 
 class Store {
-	@observable list = [] as BulletType[]
+	@observable list = [] as LineType[]
 	@observable rtl = false
 }
 
 export const store = new Store()
-export const Bullet = createBulletCreator(store.list)
+export const Line = createLineCreator(store.list)
 
 // Load data from local storage and set auto save
 
@@ -22,8 +22,8 @@ const LSstore: any = JSON.parse(
 )
 
 if (LSstore) {
-	LSstore.list.forEach((d: BaseBulletCls) =>
-		store.list.push(BulletCls.fromJSON(store.list, d, undefined))
+	LSstore.list.forEach((d: BaseLineCls) =>
+		store.list.push(LineCls.fromJSON(store.list, d, undefined))
 	)
 	store.rtl = LSstore.rtl
 }

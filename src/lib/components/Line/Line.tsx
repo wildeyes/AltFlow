@@ -2,31 +2,32 @@ import 'animate.css'
 import classnames from 'classnames'
 import { observable } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React, { KeyboardEvent, useEffect, useRef } from 'react'
-import { KeyCode } from '../browser/KeyCodes'
-import { animateRtl } from '../common'
+import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
+import { KeyCode } from '../../browser/KeyCodes'
+import { animateRtl } from '../../common'
+import './Line.scss'
 
-export const createBulletCreator = (firstList: BulletType[]) => {
-	return (args?: Partial<BulletType>) => new BulletCls(firstList, args)
+export const createLineCreator = (firstList: LineType[]) => {
+	return (args?: Partial<LineType>) => new LineCls(firstList, args)
 }
-export type BulletType = BulletCls
+export type LineType = LineCls
 
 export type Selection = [number, number, 'forward' | 'backward' | 'none']
 
-export type BaseBulletCls = {
+export type BaseLineCls = {
 	title: string
 	desc: string
 	created: string
 	modified: string
 	starred: boolean
-	children: BaseBulletCls[]
+	children: BaseLineCls[]
 }
 
-export class BulletCls {
-	private firstList: BulletType[]
+export class LineCls {
+	private firstList: LineType[]
 	public shouldFocus: boolean | Selection
 	constructor(
-		firstList: BulletType[],
+		firstList: LineType[],
 		{
 			shouldFocus = false,
 
@@ -37,7 +38,7 @@ export class BulletCls {
 			starred = false,
 			children = [],
 			parent = undefined,
-		}: Partial<BulletType> = {}
+		}: Partial<LineType> = {}
 	) {
 		this.title = title
 		this.desc = desc
@@ -57,16 +58,16 @@ export class BulletCls {
 	@observable modified = new Date()
 	@observable starred = false
 	@observable completed = false
-	@observable children: BulletType[] = []
+	@observable children: LineType[] = []
 
-	private _parent?: BulletType = undefined
-	set parent(parent: BulletType | undefined) {
+	private _parent?: LineType = undefined
+	set parent(parent: LineType | undefined) {
 		this._parent = parent
 	}
 	get index() {
 		return this.parentList.indexOf(this)
 	}
-	get parent(): BulletType | undefined {
+	get parent(): LineType | undefined {
 		return this._parent
 	}
 	get parentList() {
@@ -143,7 +144,7 @@ export class BulletCls {
 				() => {
 					if (ctrlKey) {
 						this.completed = true
-						;(function recurse(b: BulletCls) {
+						;(function recurse(b: LineCls) {
 							b.children.forEach(bb => {
 								bb.completed = true
 								recurse(bb)
@@ -151,11 +152,11 @@ export class BulletCls {
 						})(this)
 					} else {
 						const { parentList, parent } = this
-						const bullet = new BulletCls(this.firstList, {
+						const line = new LineCls(this.firstList, {
 							shouldFocus: true,
 							parent,
 						})
-						parentList.splice(index + 1, 0, bullet)
+						parentList.splice(index + 1, 0, line)
 					}
 				},
 			],
@@ -163,22 +164,22 @@ export class BulletCls {
 				KeyCode.TAB,
 				() => {
 					const { parentList, parent } = this
-					let movedBullet
+					let movedLine
 					if (shiftKey) {
 						if (!parent) return animateNope()
-						movedBullet = parentList.splice(index, 1)[0]
+						movedLine = parentList.splice(index, 1)[0]
 						const grandpa = parent.parent
 						const grandpaList = parent.parentList
 						const parentId = grandpaList.indexOf(parent)
-						movedBullet.parent = grandpa
+						movedLine.parent = grandpa
 						grandpaList.splice(parentId + 1, 0, this)
 					} else {
 						if (index === 0) return animateNope()
-						movedBullet = parentList.splice(index, 1)[0]
-						movedBullet.parent = parentList[index - 1]
-						parentList[index - 1].children.push(movedBullet)
+						movedLine = parentList.splice(index, 1)[0]
+						movedLine.parent = parentList[index - 1]
+						parentList[index - 1].children.push(movedLine)
 					}
-					movedBullet.shouldFocus = shouldFocus
+					movedLine.shouldFocus = shouldFocus
 				},
 			],
 			[
@@ -255,12 +256,8 @@ export class BulletCls {
 	/**
 	 * base method for rehydration from localstorage
 	 */
-	static fromJSON(
-		firstList: any,
-		d: BaseBulletCls,
-		parent: BulletCls | undefined
-	) {
-		const b = new BulletCls(firstList, {
+	static fromJSON(firstList: any, d: BaseLineCls, parent: LineCls | undefined) {
+		const b = new LineCls(firstList, {
 			...d,
 			created: new Date(d.created),
 			modified: new Date(d.modified),
@@ -268,7 +265,7 @@ export class BulletCls {
 			parent,
 		})
 
-		b.children = d.children.map(d => BulletCls.fromJSON(firstList, d, b))
+		b.children = d.children.map(d => LineCls.fromJSON(firstList, d, b))
 
 		return b
 	}
@@ -278,51 +275,49 @@ function animateNope() {
 	console.log('TBD cute animation showing you cant do that')
 }
 
-export const BulletEle = observer(
-	({
-		index,
-		bullet,
-		rtl,
-	}: {
-		index: number
-		rtl: boolean
-		bullet: BulletType
-	}) => {
+export const LineEle = observer(
+	({ index, line, rtl }: { index: number; rtl: boolean; line: LineType }) => {
+		const [overLine, setOverLine] = useState(false)
 		const ref = useRef<HTMLInputElement>(null)
 		useEffect(() => {
-			if (bullet.shouldFocus) {
+			if (line.shouldFocus) {
 				ref.current!.focus()
-				if (typeof bullet.shouldFocus !== 'boolean') {
-					const [start, end, direction] = bullet.shouldFocus
+				if (typeof line.shouldFocus !== 'boolean') {
+					const [start, end, direction] = line.shouldFocus
 					ref.current!.setSelectionRange(start, end, direction)
 				}
-				bullet.shouldFocus = false
+				line.shouldFocus = false
 			}
 		})
 
 		return (
 			<li
-				className={classnames('bullet-container', {
-					completed: bullet.completed,
-					starred: bullet.starred,
+				className={classnames('line__container', {
+					completed: line.completed,
+					starred: line.starred,
+					overLine,
 				})}
 			>
-				<div className="bullet__content">
-					<div className="bullet__bullet" />
+				<div className="line__content">
+					<div
+						className="line__bullet"
+						onMouseEnter={() => setOverLine(true)}
+						onMouseLeave={() => setOverLine(false)}
+					/>
 					<input
-						className={classnames('bullet__title', {
-							[`animated ${animateRtl('fadeOut', rtl)}`]: bullet.completed,
+						className={classnames('line__title', {
+							[`animated ${animateRtl('fadeOut', rtl)}`]: line.completed,
 						})}
-						data-id={bullet.getIdString()}
-						value={bullet.title}
-						onChange={({ currentTarget: { value } }) => (bullet.title = value)}
-						onKeyDown={event => bullet.handleKeyDown(index, event)}
+						data-id={line.getIdString()}
+						value={line.title}
+						onChange={({ currentTarget: { value } }) => (line.title = value)}
+						onKeyDown={event => line.handleKeyDown(index, event)}
 						ref={ref}
 					/>
-					{Boolean(bullet.children.length) && (
-						<ul className="bullet__children">
-							{bullet.children.map((b, i) => (
-								<BulletEle rtl={rtl} index={i} bullet={b} key={i} />
+					{Boolean(line.children.length) && (
+						<ul className="line__children">
+							{line.children.map((b, i) => (
+								<LineEle rtl={rtl} index={i} line={b} key={i} />
 							))}
 						</ul>
 					)}
