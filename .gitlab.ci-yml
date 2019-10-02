@@ -17,6 +17,7 @@ pages:
   script:
     - yarn install --pure-lockfile --cache-folder .yarn
     - yarn build
+    - mv build public
   artifacts:
     paths:
       - public
