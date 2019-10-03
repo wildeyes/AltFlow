@@ -5,6 +5,7 @@ import { animateRtl, Textarea } from '../../common'
 import { store as uiStore } from '../../stores/ui'
 import { LineType } from '../../stores/Line'
 import './Line.scss'
+import { AddChildBtn } from '../AddChildBtn/AddChildBtn'
 
 export const Line = observer(
 	({ index, line, rtl }: { index: number; rtl: boolean; line: LineType }) => {
@@ -20,6 +21,7 @@ export const Line = observer(
 				line.shouldFocus = false
 			}
 		})
+
 		return (
 			<div
 				className={classnames('line__container', {
@@ -53,11 +55,18 @@ export const Line = observer(
 							value={line.notes}
 						/>
 					)}
-					<div className="line__children">
-						{line.children.map((b, i) => (
-							<Line rtl={rtl} index={i} line={b} key={i} />
-						))}
-					</div>
+					{Boolean(line.children.length) && (
+						<div className="line__children">
+							{line.children.map((b, i) => (
+								<Line rtl={rtl} index={i} line={b} key={i} />
+							))}
+							<AddChildBtn
+								onClick={() => line.createChild({ shouldFocus: true })}
+								data-id={line.getIdString()}
+								className="line__addChildBtn"
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 		)
