@@ -1,6 +1,7 @@
 import { autorun, observable } from 'mobx'
 import { store as dataStore } from './data'
 import { Line } from './Line'
+import { Mouse } from '../types'
 
 export const localstorageKey = '__altflow_ui'
 
@@ -8,7 +9,7 @@ class Store {
 	// settings
 	@observable rtl = false
 	// states
-	@observable grabbing: Line | null = null
+	@observable grabbing: ((mousePos: Mouse | null) => any) | null = null
 	@observable private _doc: Line = dataStore.home
 
 	setDoc(value: Line | null) {

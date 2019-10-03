@@ -14,7 +14,7 @@ export const AddChildBtn = (props: any) => (
 			x2="15"
 			y2="10.5"
 			stroke="#b7bcbf"
-			stroke-width="1"
+			strokeWidth="1"
 		></line>
 		<line
 			x1="10.5"
@@ -22,7 +22,7 @@ export const AddChildBtn = (props: any) => (
 			x2="10.5"
 			y2="15"
 			stroke="#b7bcbf"
-			stroke-width="1"
+			strokeWidth="1"
 		></line>
 	</svg>
 )

@@ -10,3 +10,4 @@ export type LineJSONType = {
 	starred: boolean
 	children: LineJSONType[]
 }
+export type Mouse = { x: number; y: number }

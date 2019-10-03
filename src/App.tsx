@@ -23,7 +23,17 @@ const App: React.FC = observer(() => {
 			className={classnames('app', {
 				grabbing: Boolean(uiStore.grabbing),
 			})}
-			onMouseUp={() => (uiStore.grabbing = null)}
+			onMouseUp={() => {
+				if (uiStore.grabbing) {
+					uiStore.grabbing(null)
+					uiStore.grabbing = null
+				}
+			}}
+			onMouseMove={({ clientX: x, clientY: y }) => {
+				if (uiStore.grabbing) {
+					uiStore.grabbing({ x, y })
+				}
+			}}
 			onKeyDown={({ keyCode }: React.KeyboardEvent) => {
 				if (Boolean(uiStore.grabbing) && KeyCode.ESC === keyCode) {
 					uiStore.grabbing = null
@@ -35,7 +45,7 @@ const App: React.FC = observer(() => {
 				<div className="app__breadcrumbs">
 					{uiStore.doc.hierarchy.map((l, i) => {
 						return (
-							<React.Fragment>
+							<React.Fragment key={i}>
 								{i > 0 && '>'}
 								<a
 									className="app__breadcrumb-title"

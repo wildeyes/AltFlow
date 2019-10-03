@@ -6,7 +6,7 @@ import { KeyCode } from '../../browser/KeyCodes'
 import { animateRtl, Textarea } from '../../common'
 import { Line } from '../../stores/Line'
 import { store as uiStore } from '../../stores/ui'
-import { Selection, ShouldFocus } from '../../types'
+import { Selection, ShouldFocus, Mouse } from '../../types'
 import { AddChildBtn } from '../AddChildBtn/AddChildBtn'
 import './Line.scss'
 
@@ -14,11 +14,11 @@ export const LineEle = observer(
 	({ index, line, rtl }: { index: number; rtl: boolean; line: Line }) => {
 		const titleRef = useRef<HTMLInputElement>(null)
 		const notesRef = useRef<HTMLTextAreaElement>(null)
-
 		const [overLine, setOverLine] = useState(false)
 		const [focusTitle, setFocusTitle] = useState<ShouldFocus>(line.shouldFocus)
 		const [focusNotes, setFocusNotes] = useState<ShouldFocus>(false)
 		const [isEditingNotes, setIsEditingNotes] = useState(false)
+		const [mousePos, setMousePos] = useState<Mouse | null>(null)
 
 		useEffect(() => {
 			if (focusTitle) {
@@ -39,7 +39,7 @@ export const LineEle = observer(
 				}
 				setFocusNotes(false)
 			}
-		})
+		}, [focusTitle, focusNotes])
 
 		function handleKeyDown<T extends HTMLTextAreaElement | HTMLInputElement>(
 			index: number,
@@ -164,16 +164,26 @@ export const LineEle = observer(
 				className={classnames('line__container', {
 					completed: line.completed,
 					starred: line.starred,
-					overLine,
+					overLine: overLine && !uiStore.grabbing,
 				})}
 			>
 				<div className="line__content">
 					<div
-						className="line__bullet"
+						className={classnames('line__bullet', {})}
 						onMouseEnter={() => setOverLine(true)}
 						onMouseLeave={() => setOverLine(false)}
-						onClick={() => uiStore.setDoc(line)}
-						onMouseDown={() => (uiStore.grabbing = line)}
+						onMouseDown={() => {
+							uiStore.grabbing = setMousePos
+						}}
+						style={
+							mousePos
+								? {
+										position: 'fixed',
+										top: mousePos.y,
+										left: mousePos.x,
+								  }
+								: undefined
+						}
 					/>
 					<input
 						className={classnames('line__title title-input', {
