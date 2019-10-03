@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import './App.scss'
 import { Line, FLAG_HOME } from './lib/stores/Line'
-import { Line as LineEle } from './lib/components/Line/Line'
+import { LineEle } from './lib/components/Line/Line'
 import { store as dataStore } from './lib/stores/data'
 import { store as uiStore } from './lib/stores/ui'
 import classnames from 'classnames'
@@ -17,13 +17,6 @@ const App: React.FC = observer(() => {
 			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
 		}
 	})
-
-	// function shiftBetween(e: React.FormEvent) {
-	// 	const { currentTarget: { className, nextSibling, previousElementSibling }} = e;
-	// 	if(className.includes('doc__notes') && previousElementSibling) {
-	// 		previousElementSibling.
-	// 	}
-	// }
 
 	return (
 		<div

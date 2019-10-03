@@ -1,6 +1,6 @@
 import { autorun, observable } from 'mobx'
-import { Line } from './Line'
 import { store as dataStore } from './data'
+import { Line } from './Line'
 
 export const localstorageKey = '__altflow_ui'
 
@@ -10,7 +10,7 @@ class Store {
 	// states
 	@observable grabbing: Line | null = null
 	@observable private _doc: Line = dataStore.home
-	@observable editingNotes: boolean = false
+
 	setDoc(value: Line | null) {
 		if (!value) this._doc = dataStore.home
 		else this._doc = value
@@ -18,6 +18,9 @@ class Store {
 	get doc(): Line {
 		if (this._doc) return this._doc
 		else return dataStore.home
+	}
+	animateNope() {
+		console.log('TBD cute animation showing you cant do that')
 	}
 }
 

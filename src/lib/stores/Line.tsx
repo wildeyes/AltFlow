@@ -1,12 +1,8 @@
-import 'animate.css'
-import { observable, computed } from 'mobx'
-import React from 'react'
-import { KeyCode } from '../browser/KeyCodes'
-import { store as uiStore } from './ui'
-import { Selection, LineType, LineJSONType } from '../types'
+import { computed, observable } from 'mobx'
+import { LineJSONType, ShouldFocus } from '../types'
 
 export class Line {
-	public shouldFocus: boolean | Selection
+	public shouldFocus: ShouldFocus
 	constructor({
 		shouldFocus = false,
 		flags = {
@@ -19,7 +15,7 @@ export class Line {
 		starred = false,
 		children = [],
 		parent = undefined,
-	}: Partial<LineType> = {}) {
+	}: Partial<Line> = {}) {
 		this.flags = flags
 		this.title = title
 		this.notes = notes
@@ -40,16 +36,16 @@ export class Line {
 	@observable modified = new Date()
 	@observable starred = false
 	@observable completed = false
-	@observable children: LineType[] = []
+	@observable children: Line[] = []
 
-	private _parent?: LineType = undefined
-	set parent(parent: LineType | undefined) {
+	private _parent?: Line = undefined
+	set parent(parent: Line | undefined) {
 		this._parent = parent
 	}
 	get index() {
 		return this.parentList.indexOf(this)
 	}
-	get parent(): LineType | undefined {
+	get parent(): Line | undefined {
 		return this._parent
 	}
 	get parentList() {
@@ -67,11 +63,11 @@ export class Line {
 		const { index, children, parent, parentList } = this
 		if (children.length) return children[0]
 		else if (index >= parentList.length - 1) {
-			if (this.atRootList) return animateNope()
+			if (this.atRootList) return undefined
 			let currentParent = parent!
 			let almostSibling = parent!.nextImmediateSibling
 			while (currentParent && !almostSibling) {
-				if (!currentParent.parent) return animateNope()
+				if (!currentParent.parent) return undefined
 				currentParent = currentParent.parent
 				almostSibling = currentParent.nextImmediateSibling
 			}
@@ -83,7 +79,7 @@ export class Line {
 	get previousSibling() {
 		const { index, parent, previousImmediateSibling } = this
 		if (index === 0) {
-			if (this.atRootList) return animateNope()
+			if (this.atRootList) return undefined
 			return parent
 		} else {
 			const prev = previousImmediateSibling! // guarded by index === 0
@@ -110,147 +106,26 @@ export class Line {
 		if (this.atRootList) return [this.parent!, this]
 		return [...this.parent!.hierarchy, this]
 	}
-	focus() {
-		this.getDOMElement().focus()
-	}
-	createChild(args?: Partial<LineType>) {
-		this.addChild(new Line(args))
+	/**
+	 * create and return the created child
+	 */
+	createChild(args?: Partial<Line>) {
+		const newline = new Line(args)
+		this.addChild(newline)
+		return newline
 	}
 	addChild(...lineList: Line[]) {
 		lineList.forEach(l => {
 			this.children.push(l)
 			l.parent = this
 		})
-		return this // chainable
 	}
-	handleKeyDown<T extends HTMLTextAreaElement | HTMLInputElement>(
-		index: number,
-		event: React.KeyboardEvent<T>
-	) {
-		const {
-			currentTarget,
-			keyCode,
-			// altKey,
-			shiftKey,
-			ctrlKey,
-		} = event
-		const {
-			selectionStart: _start,
-			selectionEnd: _end,
-			selectionDirection: _direction,
-		} = currentTarget
-		const start = _start || 0
-		const end = _end || 0
-		const direction = _direction || 'none'
-		const shouldFocus = [start, end, direction] as Selection
-		const maps: [number, () => void][] = [
-			[
-				KeyCode.ENTER,
-				() => {
-					if (ctrlKey) {
-						this.completed = true
-						;(function recurse(b: Line) {
-							b.children.forEach(bb => {
-								bb.completed = true
-								recurse(bb)
-							})
-						})(this)
-					} else if (shiftKey) {
-						if (uiStore.editingNotes) {
-							if (!this.notes) this.notes = null
-							;(this.getDOMElement().querySelector(
-								'.line__title'
-							) as HTMLTextAreaElement).focus()
-						} else {
-							this.notes = ''
-							;(this.getDOMElement().querySelector(
-								'.line__notes'
-							) as HTMLTextAreaElement).focus()
-						}
-					} else {
-						const { parentList, parent } = this
-						const line = new Line({
-							shouldFocus: true,
-							parent,
-						})
-						parentList.splice(index + 1, 0, line)
-					}
-				},
-			],
-			[
-				KeyCode.TAB,
-				() => {
-					const { parentList } = this
-					let movedLine
-					if (shiftKey) {
-						if (this.atRootList) return animateNope()
-						movedLine = parentList.splice(index, 1)[0]
-						const parent = this.parent!
-						const grandpa = parent.parent
-						const grandpaList = parent.parentList
-						const parentId = grandpaList.indexOf(parent)
-						movedLine.parent = grandpa
-						grandpaList.splice(parentId + 1, 0, this)
-					} else {
-						if (index === 0) return animateNope()
-						movedLine = parentList.splice(index, 1)[0]
-						movedLine.parent = parentList[index - 1]
-						parentList[index - 1].children.push(movedLine)
-					}
-					movedLine.shouldFocus = shouldFocus
-				},
-			],
-			[
-				KeyCode.UP,
-				() => {
-					const { previousSibling } = this
-					if (previousSibling) previousSibling.focus()
-					else animateNope()
-				},
-			],
-			[
-				KeyCode.DOWN,
-				() => {
-					const { nextSibling } = this
-					if (nextSibling) nextSibling.focus()
-					else animateNope()
-				},
-			],
-			[
-				KeyCode.BACKSPACE,
-				() => {
-					const { parentList } = this
-					if (!this.title.length) {
-						if (this.previousSibling) {
-							this.previousSibling.focus()
-							parentList.splice(index, 1)
-						} else if (this.nextImmediateSibling) {
-							this.nextImmediateSibling.focus()
-							parentList.splice(index, 1)
-						} else if (this.children.length) {
-							// TBD make children[0] new parent
-						} else {
-							animateNope()
-						}
-						return
-					}
-					return true
-				},
-			],
-		]
-		for (const [kbs, fn] of maps) {
-			if (kbs === keyCode) {
-				const stopPreventAndEverything = !Boolean(fn())
-				if (stopPreventAndEverything) {
-					event.stopPropagation()
-					event.preventDefault()
-				}
-				return stopPreventAndEverything
-			}
-		}
-	}
+
 	getIdString() {
 		return this.created.getTime()
+	}
+	focus() {
+		this.getDOMElement().focus()
 	}
 	getDOMElement() {
 		return document.querySelector<HTMLInputElement>(
@@ -271,7 +146,7 @@ export class Line {
 			children: this.children,
 		}
 	}
-	shouldDisplayNotes() {
+	get shouldDisplayNotes() {
 		return this.notes !== null
 	}
 	/**
@@ -290,10 +165,6 @@ export class Line {
 
 		return obj
 	}
-}
-
-function animateNope() {
-	console.log('TBD cute animation showing you cant do that')
 }
 
 export const FLAG_HOME = 'FLAG_HOME'
