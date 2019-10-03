@@ -30,7 +30,7 @@
   display: grid;
   align-items: center;
   grid-template-rows: 30px 1fr;
-  grid-template-columns: 25px 1fr;
+  grid-template-columns: $bullet-width 1fr;
   justify-content: flex-start;
 }
 .line__title {

@@ -62,3 +62,16 @@ code {
   margin-bottom: 10px;
   padding-top: 4px;
 }
+.addChildBtn {
+  margin-left: 0px;
+  margin-top: 6.5px;
+  width: $bullet-width;
+  height: 20px;
+  opacity: 0.5;
+  circle {
+    opacity: 0;
+  }
+  &:hover circle {
+    opacity: 1;
+  }
+}

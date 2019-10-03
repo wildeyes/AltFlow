@@ -2,6 +2,8 @@ $line-hover: #f6f7f9;
 $bullet: #3a4043;
 $bullet-hover: #a7adb0;
 
+$bullet-width: 25px;
+
 // mixins
 
 @mixin i($property, $value, $ltr, $rtl) {

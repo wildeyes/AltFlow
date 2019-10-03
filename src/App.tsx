@@ -74,6 +74,7 @@ const App: React.FC = observer(() => {
 								currentTarget: { textContent: value },
 							}: React.FormEvent) => (uiStore.doc.title = value || '')}
 							value={uiStore.doc.title}
+							placeholder="Untitled"
 						/>
 						<Textarea
 							className="doc__notes notes-textarea"
@@ -85,6 +86,29 @@ const App: React.FC = observer(() => {
 				{uiStore.doc.children.map((b, i) => (
 					<LineEle rtl={uiStore.rtl} index={i} line={b} key={i} />
 				))}
+				<svg
+					className="addChildBtn"
+					viewBox="0 0 20 20"
+					onClick={() => uiStore.doc.createChild({ shouldFocus: true })}
+				>
+					<circle cx="10.5" cy="10.5" r="9" fill="#dce0e2"></circle>
+					<line
+						x1="6"
+						y1="10.5"
+						x2="15"
+						y2="10.5"
+						stroke="#b7bcbf"
+						stroke-width="1"
+					></line>
+					<line
+						x1="10.5"
+						y1="6"
+						x2="10.5"
+						y2="15"
+						stroke="#b7bcbf"
+						stroke-width="1"
+					></line>
+				</svg>
 			</section>
 			<footer></footer>
 		</div>

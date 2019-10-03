@@ -124,6 +124,9 @@ export class Line {
 	focus() {
 		this.getDOMElement().focus()
 	}
+	createChild(args?: Partial<LineType>) {
+		this.addChild(new Line(args))
+	}
 	addChild(...lineList: Line[]) {
 		lineList.forEach(l => {
 			this.children.push(l)
