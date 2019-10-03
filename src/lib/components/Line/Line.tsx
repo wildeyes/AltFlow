@@ -169,7 +169,9 @@ export const LineEle = observer(
 			>
 				<div className="line__content">
 					<div
-						className={classnames('line__bullet', {})}
+						className={classnames('line__bullet', {
+							grabbing: Boolean(mousePos),
+						})}
 						onMouseEnter={() => setOverLine(true)}
 						onMouseLeave={() => setOverLine(false)}
 						onMouseDown={() => {
@@ -181,6 +183,7 @@ export const LineEle = observer(
 										position: 'fixed',
 										top: mousePos.y,
 										left: mousePos.x,
+										transform: 'translate(-50%, -50%)',
 								  }
 								: undefined
 						}

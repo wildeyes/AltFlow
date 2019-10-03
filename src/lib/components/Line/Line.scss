@@ -57,7 +57,8 @@ input.line__title {
   height: 8px;
   border-radius: 100%;
   justify-self: center;
-  &:hover {
+  .overLine &,
+  &.grabbing {
     border: 5px solid $bullet-hover;
   }
 }
