@@ -3,6 +3,7 @@
 .line__container {
   min-height: 30px;
   color: rgb(42, 49, 53);
+  position: relative;
   input {
     color: rgb(42, 49, 53);
   }
@@ -14,12 +15,22 @@
     }
     text-decoration: line-through;
   }
+  &.overLine:before {
+    content: "";
+    background-color: $line-hover;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    z-index: 0;
+  }
 }
 .line__content {
+  z-index: 1;
   display: grid;
   align-items: center;
   grid-template-rows: 30px 1fr;
-  grid-template-columns: 20px 1fr;
+  grid-template-columns: 25px 1fr;
   justify-content: flex-start;
 }
 .line__title {
@@ -29,12 +40,17 @@
   overflow-wrap: break-word;
   position: relative;
   user-select: text;
-  margin-inline-start: 15px;
+  margin-inline-start: 8px;
   animation-delay: 0.3s;
   animation-iteration-count: 1;
 }
+input.line__title {
+  background-color: transparent;
+}
 
 .line__bullet {
+  cursor: pointer;
+  z-index: 1;
   background-color: $bullet;
   width: 8px;
   height: 8px;

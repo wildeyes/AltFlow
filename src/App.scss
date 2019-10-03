@@ -12,6 +12,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+.app {
+  &.grabbing {
+    cursor: grab;
+  }
+}
+
 .header {
   display: flex;
   flex-direction: row;
