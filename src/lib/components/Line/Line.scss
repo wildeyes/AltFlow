@@ -76,9 +76,9 @@ input.line__title {
 }
 .line__children {
   grid-column: span 2 / auto;
-  margin-left: 12px;
-  padding-left: 25px;
-  border-left: 1px solid rgb(236, 238, 240);
+  margin-inline-start: 12px;
+  padding-inline-start: 25px;
+  border-inline-start: 1px solid rgb(236, 238, 240);
   position: relative;
 }
 
