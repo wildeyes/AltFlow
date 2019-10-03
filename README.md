@@ -5,16 +5,18 @@ Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker
 ## Roadmap
 
 - [ ] (Feature Parity) Drag and drop
+- [ ] dark mode
 - [ ] (Feature Parity) Multiple selection
 - [ ] (Feature Parity) Nice animations
-- RTL per bullet
+- [ ] RTL per bullet
 - [ ] (Feature Parity) Share
-- Use any storage as backend (starting with google drive)
+- [ ] Use any storage as backend (starting with google drive)
 - [ ] (Feature Parity) Tags.
 - [ ] (Feature Parity) Search
-- Multiple cursors
-- iCal integration.
+- [ ] Multiple cursors
+- [ ] Themes
+- [ ] iCal integration.
 - [ ] (Feature Parity) Flutter Apps
   - [ ] Integrate with Siri
   - [ ] Integrate with Google Assistant (Help required)
-- OPML support (Help required)
+- [ ] OPML support (Help required)

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.scss'
 import { Line, FLAG_HOME } from './lib/stores/Line'
 import { LineEle } from './lib/components/Line/Line'
@@ -9,12 +9,35 @@ import classnames from 'classnames'
 import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
+import { flatten } from 'lodash'
 
+type TreeState = { line: Line; top: number; left: number }
+type State = TreeState[] | null
 const App: React.FC = observer(() => {
+	const [treeState, setTreeState] = useState<State>(null)
 	useEffect(() => {
 		if (dataStore.list.length === 0) {
 			console.log('Inserting dummy data.')
 			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
+		}
+		if (uiStore.grabbing) {
+			setTreeState(
+				(function recurse(rootline: Line): TreeState[] {
+					return flatten(
+						rootline.children.map(line => {
+							const { left, top } = line.getDOMElement().getBoundingClientRect()
+							return [
+								{
+									line,
+									top,
+									left,
+								},
+								...recurse(line),
+							]
+						})
+					)
+				})(uiStore.doc)
+			)
 		}
 		window.addEventListener('keydown', ({ keyCode }) => {
 			if (uiStore.grabbing && KeyCode.ESC === keyCode) {
@@ -22,7 +45,7 @@ const App: React.FC = observer(() => {
 				uiStore.grabbing = null
 			}
 		})
-	})
+	}, [uiStore.grabbing])
 
 	return (
 		<div
@@ -37,7 +60,14 @@ const App: React.FC = observer(() => {
 			}}
 			onMouseMove={({ clientX: x, clientY: y }) => {
 				if (uiStore.grabbing) {
-					uiStore.grabbing({ x, y })
+					uiStore.grabbing({ x, y }) // report mouse pos to update bullet pos
+					if (treeState)
+						for (const { line, top, left } of treeState) {
+							if (y < top) {
+								console.log(line.title)
+								break
+							}
+						}
 				}
 			}}
 		>
