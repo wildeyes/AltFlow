@@ -51,19 +51,14 @@ code {
     outline: none;
     font-size: 16px;
   }
-  li {
-    list-style: none;
-  }
 }
 
-// mixins
-
-@mixin i($property, $value, $ltr, $rtl) {
-  [style*="direction: ltr"] & {
-    #{$property}-#{$ltr}: $value;
-  }
-
-  [style*="direction: rtl"] & {
-    #{$property}-#{$rtl}: $value;
-  }
+.doc__title {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+.doc__notes {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding-top: 4px;
 }

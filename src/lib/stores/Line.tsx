@@ -1,5 +1,5 @@
 import 'animate.css'
-import { observable } from 'mobx'
+import { observable, computed } from 'mobx'
 import { KeyboardEvent } from 'react'
 import { KeyCode } from '../browser/KeyCodes'
 
@@ -9,7 +9,7 @@ export type Selection = [number, number, 'forward' | 'backward' | 'none']
 
 export type BaseLine = {
 	title: string
-	desc: string
+	notes: string
 	created: string
 	modified: string
 	starred: boolean
@@ -24,7 +24,7 @@ export class Line {
 			[FLAG_HOME]: false,
 		},
 		title = '',
-		desc = '',
+		notes = '',
 		created = new Date(),
 		modified = new Date(),
 		starred = false,
@@ -33,7 +33,7 @@ export class Line {
 	}: Partial<LineType> = {}) {
 		this.flags = flags
 		this.title = title
-		this.desc = desc
+		this.notes = notes
 		this.created = created
 		this.modified = modified
 		this.starred = starred
@@ -46,7 +46,7 @@ export class Line {
 		[FLAG_HOME]: false,
 	}
 	@observable title = ''
-	@observable desc = ''
+	@observable notes = ''
 	@observable created = new Date()
 	@observable modified = new Date()
 	@observable starred = false
@@ -114,7 +114,12 @@ export class Line {
 	 * check if parent is the all father Line
 	 */
 	get atRootList() {
-		return Boolean(this.parent && this.parent.flags[FLAG_HOME])
+		return this.parent && this.parent.flags[FLAG_HOME]
+	}
+	@computed get hierarchy(): Line[] {
+		if (this.flags[FLAG_HOME]) return [this]
+		if (this.atRootList) return [this.parent!, this]
+		return [...this.parent!.hierarchy, this]
 	}
 	focus() {
 		this.getDOMElement().focus()
@@ -155,6 +160,7 @@ export class Line {
 								recurse(bb)
 							})
 						})(this)
+					} else if (shiftKey) {
 					} else {
 						const { parentList, parent } = this
 						const line = new Line({
@@ -249,31 +255,31 @@ export class Line {
 	 * override JSON.stringify
 	 */
 	toJSON() {
-		const { title, desc, created, modified, starred, children } = this
 		return {
-			title,
-			desc,
-			created,
-			modified,
-			starred,
-			children,
+			title: this.title,
+			notes: this.notes,
+			created: this.created,
+			modified: this.modified,
+			starred: this.starred,
+			flags: this.flags,
+			children: this.children,
 		}
 	}
 	/**
 	 * base method for rehydration from localstorage
 	 */
-	static fromJSON(d: BaseLine, parent: Line | undefined) {
-		const b = new Line({
-			...d,
-			created: new Date(d.created),
-			modified: new Date(d.modified),
+	static fromJSON(json: BaseLine, parent: Line | undefined) {
+		const obj = new Line({
+			...json,
+			created: new Date(json.created),
+			modified: new Date(json.modified),
 			children: [],
 			parent,
 		})
 
-		b.children = d.children.map(d => Line.fromJSON(d, b))
+		obj.children = json.children.map(d => Line.fromJSON(d, obj))
 
-		return b
+		return obj
 	}
 }
 

@@ -9,12 +9,14 @@ class Store {
 	@observable rtl = false
 	// states
 	@observable grabbing: Line | null = null
-	@observable _doc: Line | null = null
-	set doc(value: Line | null) {
-		this._doc = value
+	@observable private _doc: Line = dataStore.home
+	setDoc(value: Line | null) {
+		if (!value) this._doc = dataStore.home
+		else this._doc = value
 	}
-	get doc() {
-		return Boolean(this._doc) ? this._doc : dataStore.home
+	get doc(): Line {
+		if (this._doc) return this._doc
+		else return dataStore.home
 	}
 }
 

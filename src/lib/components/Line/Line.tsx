@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useRef, useState } from 'react'
-import { animateRtl } from '../../common'
+import { animateRtl, Textarea } from '../../common'
 import { store as uiStore } from '../../stores/ui'
 import { LineType } from '../../stores/Line'
 import './Line.scss'
@@ -21,7 +21,7 @@ export const Line = observer(
 			}
 		})
 		return (
-			<li
+			<div
 				className={classnames('line__container', {
 					completed: line.completed,
 					starred: line.starred,
@@ -33,11 +33,11 @@ export const Line = observer(
 						className="line__bullet"
 						onMouseEnter={() => setOverLine(true)}
 						onMouseLeave={() => setOverLine(false)}
-						onClick={() => (uiStore.doc = line)}
+						onClick={() => uiStore.setDoc(line)}
 						onMouseDown={() => (uiStore.grabbing = line)}
 					/>
 					<input
-						className={classnames('line__title', {
+						className={classnames('line__title title-input', {
 							[`animated ${animateRtl('fadeOut', rtl)}`]: line.completed,
 						})}
 						data-id={line.getIdString()}
@@ -46,15 +46,20 @@ export const Line = observer(
 						onKeyDown={event => line.handleKeyDown(index, event)}
 						ref={ref}
 					/>
-					{Boolean(line.children.length) && (
-						<ul className="line__children">
-							{line.children.map((b, i) => (
-								<Line rtl={rtl} index={i} line={b} key={i} />
-							))}
-						</ul>
+					{line.notes && (
+						<Textarea
+							className="line__notes notes-textarea"
+							onChange={({ currentTarget: { value } }) => (line.notes = value)}
+							value={line.notes}
+						/>
 					)}
+					<div className="line__children">
+						{line.children.map((b, i) => (
+							<Line rtl={rtl} index={i} line={b} key={i} />
+						))}
+					</div>
 				</div>
-			</li>
+			</div>
 		)
 	}
 )

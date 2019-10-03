@@ -1,10 +1,10 @@
 import { autorun, computed, observable } from 'mobx'
 import { FLAG_HOME, Line } from './Line'
-
+// shouldnt import from uiStore
 export const localstorageKey = '__altflow_data'
 
 class Store {
-	@observable home = new Line({ flags: { [FLAG_HOME]: true } })
+	@observable home = new Line({ title: 'Home', flags: { [FLAG_HOME]: true } })
 	@computed get list() {
 		return this.home.children
 	}
