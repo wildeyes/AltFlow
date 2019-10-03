@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useEffect, useRef, useState } from 'react'
 import { animateRtl, Textarea } from '../../common'
 import { store as uiStore } from '../../stores/ui'
-import { LineType } from '../../stores/Line'
+import { LineType } from '../../types'
 import './Line.scss'
 import { AddChildBtn } from '../AddChildBtn/AddChildBtn'
 
@@ -48,11 +48,12 @@ export const Line = observer(
 						onKeyDown={event => line.handleKeyDown(index, event)}
 						ref={ref}
 					/>
-					{line.notes && (
+					{line.shouldDisplayNotes && (
 						<Textarea
 							className="line__notes notes-textarea"
 							onChange={({ currentTarget: { value } }) => (line.notes = value)}
-							value={line.notes}
+							onKeyDown={event => line.handleKeyDown(index, event)}
+							value={line.notes!}
 						/>
 					)}
 					{Boolean(line.children.length) && (

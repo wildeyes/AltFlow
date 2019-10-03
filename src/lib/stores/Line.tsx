@@ -1,20 +1,9 @@
 import 'animate.css'
 import { observable, computed } from 'mobx'
-import { KeyboardEvent } from 'react'
+import React from 'react'
 import { KeyCode } from '../browser/KeyCodes'
-
-export type LineType = Line
-
-export type Selection = [number, number, 'forward' | 'backward' | 'none']
-
-export type BaseLine = {
-	title: string
-	notes: string
-	created: string
-	modified: string
-	starred: boolean
-	children: BaseLine[]
-}
+import { store as uiStore } from './ui'
+import { Selection, LineType, LineJSONType } from '../types'
 
 export class Line {
 	public shouldFocus: boolean | Selection
@@ -24,7 +13,7 @@ export class Line {
 			[FLAG_HOME]: false,
 		},
 		title = '',
-		notes = '',
+		notes = null,
 		created = new Date(),
 		modified = new Date(),
 		starred = false,
@@ -46,7 +35,7 @@ export class Line {
 		[FLAG_HOME]: false,
 	}
 	@observable title = ''
-	@observable notes = ''
+	@observable notes: string | null = null
 	@observable created = new Date()
 	@observable modified = new Date()
 	@observable starred = false
@@ -134,7 +123,10 @@ export class Line {
 		})
 		return this // chainable
 	}
-	handleKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
+	handleKeyDown<T extends HTMLTextAreaElement | HTMLInputElement>(
+		index: number,
+		event: React.KeyboardEvent<T>
+	) {
 		const {
 			currentTarget,
 			keyCode,
@@ -164,6 +156,17 @@ export class Line {
 							})
 						})(this)
 					} else if (shiftKey) {
+						if (uiStore.editingNotes) {
+							if (!this.notes) this.notes = null
+							;(this.getDOMElement().querySelector(
+								'.line__title'
+							) as HTMLTextAreaElement).focus()
+						} else {
+							this.notes = ''
+							;(this.getDOMElement().querySelector(
+								'.line__notes'
+							) as HTMLTextAreaElement).focus()
+						}
 					} else {
 						const { parentList, parent } = this
 						const line = new Line({
@@ -268,10 +271,13 @@ export class Line {
 			children: this.children,
 		}
 	}
+	shouldDisplayNotes() {
+		return this.notes !== null
+	}
 	/**
 	 * base method for rehydration from localstorage
 	 */
-	static fromJSON(json: BaseLine, parent: Line | undefined) {
+	static fromJSON(json: LineJSONType, parent: Line | undefined) {
 		const obj = new Line({
 			...json,
 			created: new Date(json.created),

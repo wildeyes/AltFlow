@@ -10,6 +10,7 @@ class Store {
 	// states
 	@observable grabbing: Line | null = null
 	@observable private _doc: Line = dataStore.home
+	@observable editingNotes: boolean = false
 	setDoc(value: Line | null) {
 		if (!value) this._doc = dataStore.home
 		else this._doc = value

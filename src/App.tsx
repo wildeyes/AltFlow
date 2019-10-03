@@ -77,11 +77,13 @@ const App: React.FC = observer(() => {
 							value={uiStore.doc.title}
 							placeholder="Untitled"
 						/>
-						<Textarea
-							className="doc__notes notes-textarea"
-							onKeyDown={(e: React.FormEvent) => {}}
-							value={uiStore.doc.notes}
-						/>
+						{uiStore.doc.shouldDisplayNotes && (
+							<Textarea
+								className="doc__notes notes-textarea"
+								onKeyDown={(e: React.FormEvent) => {}}
+								value={uiStore.doc.notes!}
+							/>
+						)}
 					</section>
 				)}
 				{uiStore.doc.children.map((b, i) => (
