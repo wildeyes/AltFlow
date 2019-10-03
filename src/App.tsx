@@ -16,6 +16,12 @@ const App: React.FC = observer(() => {
 			console.log('Inserting dummy data.')
 			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
 		}
+		window.addEventListener('keydown', ({ keyCode }) => {
+			if (uiStore.grabbing && KeyCode.ESC === keyCode) {
+				uiStore.grabbing(null)
+				uiStore.grabbing = null
+			}
+		})
 	})
 
 	return (
@@ -32,11 +38,6 @@ const App: React.FC = observer(() => {
 			onMouseMove={({ clientX: x, clientY: y }) => {
 				if (uiStore.grabbing) {
 					uiStore.grabbing({ x, y })
-				}
-			}}
-			onKeyDown={({ keyCode }: React.KeyboardEvent) => {
-				if (Boolean(uiStore.grabbing) && KeyCode.ESC === keyCode) {
-					uiStore.grabbing = null
 				}
 			}}
 		>
