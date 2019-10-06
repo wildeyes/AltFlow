@@ -1,17 +1,27 @@
 import { autorun, observable } from 'mobx'
 import { store as dataStore } from './data'
 import { Line } from './Line'
-import { Mouse } from '../types'
+import { Mouse, DROP_POS } from '../types'
 
 export const localstorageKey = '__altflow_ui'
+
+type MousePosUpdater = (mousePos: Mouse | null) => any
+export type DroppingStatus = [Line, DROP_POS]
 
 class Store {
 	// settings
 	@observable rtl = false
 	// states
-	@observable grabbing: ((mousePos: Mouse | null) => any) | null = null
+	@observable updateMousePos: (MousePosUpdater) | null = null
+	@observable droppingStatus: DroppingStatus | null = null
 	@observable private _doc: Line = dataStore.home
 
+	// startDnd(updateMousePos: MousePosUpdater) {}
+	endDnd() {
+		if (this.updateMousePos) this.updateMousePos(null)
+		this.updateMousePos = null
+		this.droppingStatus = null
+	}
 	setDoc(value: Line | null) {
 		if (!value) this._doc = dataStore.home
 		else this._doc = value

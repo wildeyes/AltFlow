@@ -32,6 +32,7 @@
   grid-template-rows: 30px 1fr;
   grid-template-columns: $bullet-width 1fr;
   justify-content: flex-start;
+  position: relative;
 }
 .line__title {
   white-space: pre-wrap;
@@ -96,4 +97,11 @@ input.line__title {
   &:hover {
     opacity: 0.7;
   }
+}
+.line__dnd-top {
+  border-top: 2px solid yellow;
+}
+.line__dnd-bottom,
+.line__dnd-children {
+  border-bottom: 2px solid yellow;
 }

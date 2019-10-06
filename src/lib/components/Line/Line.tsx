@@ -18,7 +18,10 @@ export const LineEle = observer(
 		const [focusTitle, setFocusTitle] = useState<ShouldFocus>(line.shouldFocus)
 		const [focusNotes, setFocusNotes] = useState<ShouldFocus>(false)
 		const [isEditingNotes, setIsEditingNotes] = useState(false)
+
+		// grabbing and dnd
 		const [mousePos, setMousePos] = useState<Mouse | null>(null)
+		const [dropMaybeMe, dropPos] = uiStore.droppingStatus || [null, 'TOP']
 
 		useEffect(() => {
 			if (focusTitle) {
@@ -164,10 +167,15 @@ export const LineEle = observer(
 				className={classnames('line__container', {
 					completed: line.completed,
 					starred: line.starred,
-					overLine: overLine && !uiStore.grabbing,
+					overLine: overLine && !uiStore.updateMousePos,
 				})}
 			>
-				<div className="line__content">
+				<div
+					className={classnames('line__content', {
+						'line__dnd-top': dropMaybeMe === line && dropPos === 'TOP',
+						'line__dnd-bottom': dropMaybeMe === line && dropPos === 'BOTTOM',
+					})}
+				>
 					<div
 						className={classnames('line__bullet', {
 							grabbing: Boolean(mousePos),
@@ -175,7 +183,7 @@ export const LineEle = observer(
 						onMouseEnter={() => setOverLine(true)}
 						onMouseLeave={() => setOverLine(false)}
 						onMouseDown={() => {
-							uiStore.grabbing = setMousePos
+							uiStore.updateMousePos = setMousePos
 						}}
 						style={
 							mousePos
@@ -191,6 +199,8 @@ export const LineEle = observer(
 					<input
 						className={classnames('line__title title-input', {
 							[`animated ${animateRtl('fadeOut', rtl)}`]: line.completed,
+							'line__dnd-children':
+								dropMaybeMe === line && dropPos === 'CHILDREN',
 						})}
 						data-id={line.getIdString()}
 						value={line.title}
@@ -209,19 +219,20 @@ export const LineEle = observer(
 							onFocus={() => setIsEditingNotes(true)}
 						/>
 					)}
-					{Boolean(line.children.length) && (
-						<div className="line__children">
-							{line.children.map((b, i) => (
-								<LineEle rtl={rtl} index={i} line={b} key={i} />
-							))}
-							<AddChildBtn
-								onClick={() => line.createChild({ shouldFocus: true })}
-								data-id={line.getIdString()}
-								className="line__addChildBtn"
-							/>
-						</div>
-					)}
 				</div>
+
+				{Boolean(line.children.length) && (
+					<div className="line__children">
+						{line.children.map((b, i) => (
+							<LineEle rtl={rtl} index={i} line={b} key={i} />
+						))}
+						<AddChildBtn
+							onClick={() => line.createChild({ shouldFocus: true })}
+							data-id={line.getIdString()}
+							className="line__addChildBtn"
+						/>
+					</div>
+				)}
 			</div>
 		)
 	}

@@ -4,15 +4,22 @@ import './App.scss'
 import { Line, FLAG_HOME } from './lib/stores/Line'
 import { LineEle } from './lib/components/Line/Line'
 import { store as dataStore } from './lib/stores/data'
-import { store as uiStore } from './lib/stores/ui'
+import { store as uiStore, DroppingStatus } from './lib/stores/ui'
 import classnames from 'classnames'
 import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
 import { flatten } from 'lodash'
 
-type TreeState = { line: Line; top: number; left: number }
+type TreeState = {
+	line: Line
+	top: number
+	left: number
+	bottom: number
+	height: number
+}
 type State = TreeState[] | null
+
 const App: React.FC = observer(() => {
 	const [treeState, setTreeState] = useState<State>(null)
 	useEffect(() => {
@@ -20,18 +27,25 @@ const App: React.FC = observer(() => {
 			console.log('Inserting dummy data.')
 			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
 		}
-		if (uiStore.grabbing) {
+		if (uiStore.updateMousePos) {
 			setTreeState(
 				(function recurse(rootline: Line): TreeState[] {
 					return flatten(
 						rootline.children.map(line => {
-							const { left, top } = line.getDOMElement().getBoundingClientRect()
+							const {
+								left,
+								top,
+								bottom,
+								height,
+							} = line.getDOMElement().getBoundingClientRect()
 							return [
 								{
 									line,
 									top,
 									left,
-								},
+									bottom,
+									height,
+								} as TreeState,
 								...recurse(line),
 							]
 						})
@@ -39,32 +53,43 @@ const App: React.FC = observer(() => {
 				})(uiStore.doc)
 			)
 		}
+
 		window.addEventListener('keydown', ({ keyCode }) => {
-			if (uiStore.grabbing && KeyCode.ESC === keyCode) {
-				uiStore.grabbing(null)
-				uiStore.grabbing = null
+			if (uiStore.updateMousePos && KeyCode.ESC === keyCode) {
+				uiStore.updateMousePos(null)
+				uiStore.updateMousePos = null
 			}
 		})
-	}, [uiStore.grabbing])
+	}, [uiStore.updateMousePos])
 
 	return (
 		<div
 			className={classnames('app', {
-				grabbing: Boolean(uiStore.grabbing),
+				grabbing: Boolean(uiStore.updateMousePos),
 			})}
-			onMouseUp={() => {
-				if (uiStore.grabbing) {
-					uiStore.grabbing(null)
-					uiStore.grabbing = null
-				}
-			}}
+			onMouseUp={() => uiStore.endDnd()}
 			onMouseMove={({ clientX: x, clientY: y }) => {
-				if (uiStore.grabbing) {
-					uiStore.grabbing({ x, y }) // report mouse pos to update bullet pos
+				if (uiStore.updateMousePos) {
+					uiStore.updateMousePos({ x, y }) // report mouse pos to update bullet pos
 					if (treeState)
-						for (const { line, top, left } of treeState) {
+						for (const {
+							line,
+							top,
+							left,
+							bottom,
+							height,
+						} of treeState.reverse()) {
+							let droppingStatus
+							const center = height / 2
+							const isOnTop = top < y && y < bottom
+
 							if (y < top) {
-								console.log(line.title)
+								droppingStatus = [line, 'TOP'] as DroppingStatus
+							}
+							if (left + 25 < x) {
+							}
+							if (droppingStatus) {
+								uiStore.droppingStatus = droppingStatus
 								break
 							}
 						}
