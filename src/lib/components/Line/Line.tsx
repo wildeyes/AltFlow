@@ -15,24 +15,21 @@ export const LineEle = observer(
 		const titleRef = useRef<HTMLInputElement>(null)
 		const notesRef = useRef<HTMLTextAreaElement>(null)
 		const [overLine, setOverLine] = useState(false)
-		const [focusTitle, setFocusTitle] = useState<ShouldFocus>(line.shouldFocus)
 		const [focusNotes, setFocusNotes] = useState<ShouldFocus>(false)
 		const [isEditingNotes, setIsEditingNotes] = useState(false)
-
+		// console.log(line.title, line.shouldFocus, line)
 		// grabbing and dnd
 		const [mousePos, setMousePos] = useState<Mouse | null>(null)
 		const [dropMaybeMe, dropPos] = uiStore.droppingStatus || [null, 'TOP']
 
 		useEffect(() => {
-			if (focusTitle) {
-				line.shouldFocus = false
-
+			if (line.shouldFocus) {
 				titleRef.current!.focus()
-				if (typeof focusTitle !== 'boolean') {
-					const [start, end, direction] = focusTitle
+				if (typeof line.shouldFocus !== 'boolean') {
+					const [start, end, direction] = line.shouldFocus
 					titleRef.current!.setSelectionRange(start, end, direction)
 				}
-				setFocusTitle(false)
+				line.shouldFocus = false
 			}
 			if (focusNotes) {
 				notesRef.current!.focus()
@@ -42,7 +39,7 @@ export const LineEle = observer(
 				}
 				setFocusNotes(false)
 			}
-		}, [focusTitle, focusNotes])
+		})
 
 		function handleKeyDown<T extends HTMLTextAreaElement | HTMLInputElement>(
 			index: number,
@@ -74,17 +71,19 @@ export const LineEle = observer(
 						} else if (shiftKey) {
 							if (isEditingNotes) {
 								if (!line.notes) line.notes = null
-								setFocusTitle(true)
+								line.shouldFocus = true
 							} else {
 								if (!line.notes) line.notes = ''
 								setFocusNotes(true)
 							}
 						} else {
 							const { parentList, parent } = line
+
 							const newline = new Line({
 								shouldFocus: true,
 								parent,
 							})
+
 							parentList.splice(index + 1, 0, newline)
 						}
 					},
