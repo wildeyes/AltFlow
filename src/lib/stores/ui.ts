@@ -37,6 +37,7 @@ class Store {
 		this.DOMTreeState = (function recurse(rootline: Line): TreeState[] {
 			return flatten(
 				rootline.children.map(line => {
+					if (grabbing === line) return []
 					const {
 						left,
 						top,
