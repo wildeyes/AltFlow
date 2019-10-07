@@ -19,6 +19,7 @@ type State = TreeState[]
 class Store {
 	// settings
 	@observable rtl = false
+	@observable darkmode = false
 	// states
 	@observable private grabbing: Line | null = null
 	@observable private updateMousePos: (MousePosUpdater) | null = null
@@ -84,14 +85,13 @@ class Store {
 		}
 	}
 	endDnd(cancelDnd = false) {
-		
 		if (this.updateMousePos) this.updateMousePos(null)
 		this.updateMousePos = null
 		if (this.droppingStatus) {
 			if (!this.grabbing) throw new Error('what')
 			const [line, pos] = this.droppingStatus
 			const notDndIntoHimself = line !== this.grabbing
-		
+
 			if (notDndIntoHimself && !cancelDnd) {
 				this.grabbing.selfRemove()
 				if (pos === 'BOTTOM') {
@@ -129,6 +129,7 @@ const LSstore: any = JSON.parse(
 
 if (LSstore) {
 	store.rtl = LSstore.rtl
+	store.darkmode = LSstore.darkmode
 }
 
 ;(window as any)['store'] = store
@@ -137,6 +138,7 @@ autorun(() => {
 		localstorageKey,
 		JSON.stringify({
 			rtl: store.rtl,
+			darkmode: store.darkmode,
 		})
 	)
 })

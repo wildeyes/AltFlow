@@ -4,8 +4,9 @@ Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker
 
 ## Roadmap
 
-- [ ] (Feature Parity) Drag and drop
-- [ ] dark mode
+- [V] Basic list manipulation.
+- [V] (Feature Parity) Drag and drop
+- [V] dark mode
 - [ ] (Feature Parity) Multiple selection
 - [ ] (Feature Parity) Nice animations
 - [ ] RTL per bullet

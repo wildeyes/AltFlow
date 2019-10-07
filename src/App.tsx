@@ -47,6 +47,7 @@ const App: React.FC = observer(() => {
 		<div
 			className={classnames('app', {
 				grabbing: uiStore.isDnd,
+				darkmode: uiStore.darkmode,
 			})}
 			onMouseUp={() => uiStore.endDnd()}
 			onMouseMove={({ clientX: x, clientY: y }) => {
@@ -76,6 +77,12 @@ const App: React.FC = observer(() => {
 					})}
 				</div>
 				<button className="showCompleted">Show completed</button>
+				<button
+					className="darkmode"
+					onClick={() => (uiStore.darkmode = !uiStore.darkmode)}
+				>
+					Dark Mode
+				</button>
 				<button className="rtl" onClick={() => (uiStore.rtl = !uiStore.rtl)}>
 					RTL
 				</button>

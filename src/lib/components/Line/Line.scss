@@ -2,11 +2,7 @@
 
 .line__container {
   min-height: 30px;
-  color: rgb(42, 49, 53);
   position: relative;
-  input {
-    color: rgb(42, 49, 53);
-  }
 
   &.completed {
     color: #a8aeb1;
@@ -15,9 +11,12 @@
     }
     text-decoration: line-through;
   }
-  &.overLine:before {
+  &.overline:before {
     content: "";
     background-color: $line-hover;
+    .darkmode & {
+      background-color: #353535;
+    }
     position: absolute;
     width: 100%;
     height: 100%;
@@ -46,7 +45,11 @@
   line-height: 24px;
   @extend .start-second-row;
 }
-input.line__title {
+input {
+  color: rgb(42, 49, 53);
+  .darkmode & {
+    color: #c3c3c3;
+  }
   background-color: transparent;
 }
 
@@ -58,7 +61,11 @@ input.line__title {
   height: 8px;
   border-radius: 100%;
   justify-self: center;
-  .overLine &,
+
+  .darkmode & {
+    background-color: #c3c3c3;
+  }
+  &.overline,
   &.grabbing {
     border: 5px solid $bullet-hover;
   }

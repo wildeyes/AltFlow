@@ -14,7 +14,7 @@ export const LineEle = observer(
 	({ index, line, rtl }: { index: number; rtl: boolean; line: Line }) => {
 		const titleRef = useRef<HTMLInputElement>(null)
 		const notesRef = useRef<HTMLTextAreaElement>(null)
-		const [overLine, setOverLine] = useState(false)
+		const [overline, setOverline] = useState(false)
 		const [focusNotes, setFocusNotes] = useState<ShouldFocus>(false)
 		const [isEditingNotes, setIsEditingNotes] = useState(false)
 		// console.log(line.title, line.shouldFocus, line)
@@ -167,7 +167,7 @@ export const LineEle = observer(
 				className={classnames('line__container', {
 					completed: line.completed,
 					starred: line.starred,
-					overLine: overLine && !uiStore.isDnd,
+					overline: overline && !uiStore.isDnd,
 				})}
 			>
 				<div
@@ -179,9 +179,11 @@ export const LineEle = observer(
 					<div
 						className={classnames('line__bullet', {
 							grabbing: Boolean(mousePos),
+							overline: overline && !uiStore.isDnd,
 						})}
-						onMouseEnter={() => setOverLine(true)}
-						onMouseLeave={() => setOverLine(false)}
+						onClick={() => uiStore.setDoc(line)}
+						onMouseEnter={() => setOverline(true)}
+						onMouseLeave={() => setOverline(false)}
 						onMouseDown={e => {
 							uiStore.startDnd(line, setMousePos)
 							e.preventDefault()
