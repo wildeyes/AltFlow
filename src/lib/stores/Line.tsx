@@ -49,7 +49,8 @@ export class Line {
 		return this._parent
 	}
 	get parentList() {
-		return (this.parent && this.parent.children) || []
+		if (!this.parent) throw new Error('what')
+		return this.parent.children
 	}
 	get nextImmediateSibling() {
 		return this.index + 1 < this.parentList.length
@@ -106,31 +107,56 @@ export class Line {
 		if (this.atRootList) return [this.parent!, this]
 		return [...this.parent!.hierarchy, this]
 	}
+	// list manipulation methods
+	selfRemove() {
+		this.parentList.splice(this.index, 1)
+		this.parent = undefined
+	}
+
 	/**
 	 * create and return the created child
 	 */
 	createChild(args?: Partial<Line>) {
 		const newline = new Line(args)
-		this.addChild(newline)
+		this.addChildAtEnd(newline)
 		return newline
 	}
-	addChild(...lineList: Line[]) {
+	addChildAtEnd(...lineList: Line[]) {
 		lineList.forEach(l => {
 			this.children.push(l)
 			l.parent = this
 		})
+	}
+	addChildAtStart(...lineList: Line[]) {
+		lineList.forEach(l => {
+			this.children.unshift(l)
+			l.parent = this
+		})
+	}
+	addNextSibling(grabbing: Line) {
+		if (!this.parent) throw new Error('what')
+		grabbing.parent = this.parent
+		this.parentList.splice(this.index + 1, 0, grabbing)
+	}
+	addPreviousSibling(grabbing: Line) {
+		if (!this.parent) throw new Error('what')
+		grabbing.parent = this.parent
+		this.parentList.splice(this.index, 0, grabbing)
 	}
 
 	getIdString() {
 		return this.created.getTime()
 	}
 	focus() {
-		this.getDOMElement().focus()
+		this.getInputDOMElement().focus()
 	}
-	getDOMElement() {
+	getInputDOMElement() {
 		return document.querySelector<HTMLInputElement>(
 			`[data-id="${this.getIdString()}"]`
 		)!
+	}
+	get shouldDisplayNotes() {
+		return this.notes !== null
 	}
 	/**
 	 * override JSON.stringify
@@ -145,9 +171,6 @@ export class Line {
 			flags: this.flags,
 			children: this.children,
 		}
-	}
-	get shouldDisplayNotes() {
-		return this.notes !== null
 	}
 	/**
 	 * base method for rehydration from localstorage

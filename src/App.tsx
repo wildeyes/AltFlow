@@ -1,98 +1,57 @@
-import { observer } from 'mobx-react'
-import React, { useEffect, useState } from 'react'
-import './App.scss'
-import { Line, FLAG_HOME } from './lib/stores/Line'
-import { LineEle } from './lib/components/Line/Line'
-import { store as dataStore } from './lib/stores/data'
-import { store as uiStore, DroppingStatus } from './lib/stores/ui'
 import classnames from 'classnames'
+import { observer } from 'mobx-react'
+import React, { useEffect } from 'react'
+import './App.scss'
 import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
-import { flatten } from 'lodash'
-
-type TreeState = {
-	line: Line
-	top: number
-	left: number
-	bottom: number
-	height: number
-}
-type State = TreeState[] | null
+import { LineEle } from './lib/components/Line/Line'
+import { store as dataStore } from './lib/stores/data'
+import { FLAG_HOME, Line } from './lib/stores/Line'
+import { store as uiStore } from './lib/stores/ui'
 
 const App: React.FC = observer(() => {
-	const [treeState, setTreeState] = useState<State>(null)
 	useEffect(() => {
 		if (dataStore.list.length === 0) {
 			console.log('Inserting dummy data.')
-			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
-		}
-		if (uiStore.updateMousePos) {
-			setTreeState(
-				(function recurse(rootline: Line): TreeState[] {
-					return flatten(
-						rootline.children.map(line => {
-							const {
-								left,
-								top,
-								bottom,
-								height,
-							} = line.getDOMElement().getBoundingClientRect()
-							return [
-								{
-									line,
-									top,
-									left,
-									bottom,
-									height,
-								} as TreeState,
-								...recurse(line),
-							]
-						})
-					)
-				})(uiStore.doc)
-			)
+			if (window.location.href.includes('localhost')) {
+				const list1 = [
+					new Line({ title: '1' }),
+					new Line({ title: '2' }),
+					new Line({ title: '3' }),
+					new Line({ title: '4' }),
+					new Line({ title: '5' }),
+				]
+				// const list2 = [
+				// 	new Line({ title: '2.1' }),
+				// 	new Line({ title: '2.2' }),
+				// 	new Line({ title: '2.3' }),
+				// 	new Line({ title: '2.4' }),
+				// 	new Line({ title: '2.5' }),
+				// ]
+				dataStore.home.addChildAtEnd(...list1)
+				// list2[1].addChildAtEnd(...list2)
+			} else {
+				dataStore.home.addChildAtEnd(new Line({ title: 'Hello World!' }))
+			}
 		}
 
 		window.addEventListener('keydown', ({ keyCode }) => {
-			if (uiStore.updateMousePos && KeyCode.ESC === keyCode) {
-				uiStore.updateMousePos(null)
-				uiStore.updateMousePos = null
+			if (uiStore.isDnd && KeyCode.ESC === keyCode) {
+				uiStore.endDnd(true)
 			}
 		})
-	}, [uiStore.updateMousePos])
+	})
 
 	return (
 		<div
 			className={classnames('app', {
-				grabbing: Boolean(uiStore.updateMousePos),
+				grabbing: uiStore.isDnd,
 			})}
 			onMouseUp={() => uiStore.endDnd()}
 			onMouseMove={({ clientX: x, clientY: y }) => {
-				if (uiStore.updateMousePos) {
-					uiStore.updateMousePos({ x, y }) // report mouse pos to update bullet pos
-					if (treeState)
-						for (const {
-							line,
-							top,
-							left,
-							bottom,
-							height,
-						} of treeState.reverse()) {
-							let droppingStatus
-							const center = height / 2
-							const isOnTop = top < y && y < bottom
-
-							if (y < top) {
-								droppingStatus = [line, 'TOP'] as DroppingStatus
-							}
-							if (left + 25 < x) {
-							}
-							if (droppingStatus) {
-								uiStore.droppingStatus = droppingStatus
-								break
-							}
-						}
+				if (uiStore.isDnd) {
+					uiStore.moveDnd({ x, y }) // report mouse pos to update bullet pos
 				}
 			}}
 		>
@@ -104,6 +63,7 @@ const App: React.FC = observer(() => {
 							<React.Fragment key={i}>
 								{i > 0 && '>'}
 								<a
+									href="#TBD"
 									className="app__breadcrumb-title"
 									onClick={() => {
 										uiStore.setDoc(l)
@@ -158,7 +118,7 @@ const App: React.FC = observer(() => {
 })
 
 export default App
-
+/* 
 const breadcrumbSeperator = () => (
 	<svg width="5" height="8" viewBox="0 0 5 8" fill="none">
 		<path
@@ -200,3 +160,4 @@ const cogSvg = () => (
 		></path>
 	</svg>
 )
+ */

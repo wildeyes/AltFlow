@@ -22,6 +22,7 @@ export const LineEle = observer(
 		const [mousePos, setMousePos] = useState<Mouse | null>(null)
 		const [dropMaybeMe, dropPos] = uiStore.droppingStatus || [null, 'TOP']
 
+		// eslint-disable-next-line
 		useEffect(() => {
 			if (line.shouldFocus) {
 				titleRef.current!.focus()
@@ -166,7 +167,7 @@ export const LineEle = observer(
 				className={classnames('line__container', {
 					completed: line.completed,
 					starred: line.starred,
-					overLine: overLine && !uiStore.updateMousePos,
+					overLine: overLine && !uiStore.isDnd,
 				})}
 			>
 				<div
@@ -181,8 +182,9 @@ export const LineEle = observer(
 						})}
 						onMouseEnter={() => setOverLine(true)}
 						onMouseLeave={() => setOverLine(false)}
-						onMouseDown={() => {
-							uiStore.updateMousePos = setMousePos
+						onMouseDown={e => {
+							uiStore.startDnd(line, setMousePos)
+							e.preventDefault()
 						}}
 						style={
 							mousePos
