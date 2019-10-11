@@ -11,3 +11,4 @@ export type LineJSONType = {
 	children: LineJSONType[]
 }
 export type Mouse = { x: number; y: number }
+export type DROP_POS = 'TOP' | 'BOTTOM' | 'CHILDREN'

@@ -4,12 +4,12 @@ Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker
 
 ## Roadmap
 
-- [ ] (Feature Parity) Drag and drop
-- [ ] Better kbs support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
-- [ ] dark mode
-- [ ] RTL per bullet
-- [ ] Use any storage as backend (starting with google drive)
+- [V] Basic list manipulation.
+- [V] (Feature Parity) Drag and drop
+- [V] dark mode
 - [ ] (Feature Parity) Multiple selection
+- [ ] Better kbs support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
+- [ ] Use any storage as backend (starting with google drive)
 - [ ] (Feature Parity) Nice animations
 - [ ] (Feature Parity) Share
 - [ ] (Feature Parity) Hashtags.
@@ -20,6 +20,7 @@ Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker
 - [ ] (Feature Parity) Flutter Apps
   - [ ] Integrate with Siri
   - [ ] Integrate with Google Assistant (Help required)
+- [ ] RTL per bullet ?
 - [ ] Themes
 - [ ] Expose outward API to allow plugins via a userscript like interface.
 - [ ] Plugin Store, easy way to download, remove and preview plugins.

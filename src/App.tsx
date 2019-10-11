@@ -1,73 +1,58 @@
-import { observer } from 'mobx-react'
-import React, { useEffect, useState } from 'react'
-import './App.scss'
-import { Line, FLAG_HOME } from './lib/stores/Line'
-import { LineEle } from './lib/components/Line/Line'
-import { store as dataStore } from './lib/stores/data'
-import { store as uiStore } from './lib/stores/ui'
 import classnames from 'classnames'
+import { observer } from 'mobx-react'
+import React, { useEffect } from 'react'
+import './App.scss'
 import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
-import { flatten } from 'lodash'
+import { LineEle } from './lib/components/Line/Line'
+import { store as dataStore } from './lib/stores/data'
+import { FLAG_HOME, Line } from './lib/stores/Line'
+import { store as uiStore } from './lib/stores/ui'
 
-type TreeState = { line: Line; top: number; left: number }
-type State = TreeState[] | null
 const App: React.FC = observer(() => {
-	const [treeState, setTreeState] = useState<State>(null)
 	useEffect(() => {
 		if (dataStore.list.length === 0) {
 			console.log('Inserting dummy data.')
-			dataStore.home.addChild(new Line({ title: 'Hello World!' }))
+			if (window.location.href.includes('localhost')) {
+				const list1 = [
+					new Line({ title: '1' }),
+					new Line({ title: '2' }),
+					new Line({ title: '3' }),
+					new Line({ title: '4' }),
+					new Line({ title: '5' }),
+				]
+				// const list2 = [
+				// 	new Line({ title: '2.1' }),
+				// 	new Line({ title: '2.2' }),
+				// 	new Line({ title: '2.3' }),
+				// 	new Line({ title: '2.4' }),
+				// 	new Line({ title: '2.5' }),
+				// ]
+				dataStore.home.addChildAtEnd(...list1)
+				// list2[1].addChildAtEnd(...list2)
+			} else {
+				dataStore.home.addChildAtEnd(new Line({ title: 'Hello World!' }))
+			}
 		}
-		if (uiStore.grabbing) {
-			setTreeState(
-				(function recurse(rootline: Line): TreeState[] {
-					return flatten(
-						rootline.children.map(line => {
-							const { left, top } = line.getDOMElement().getBoundingClientRect()
-							return [
-								{
-									line,
-									top,
-									left,
-								},
-								...recurse(line),
-							]
-						})
-					)
-				})(uiStore.doc)
-			)
-		}
+
 		window.addEventListener('keydown', ({ keyCode }) => {
-			if (uiStore.grabbing && KeyCode.ESC === keyCode) {
-				uiStore.grabbing(null)
-				uiStore.grabbing = null
+			if (uiStore.isDnd && KeyCode.ESC === keyCode) {
+				uiStore.endDnd(true)
 			}
 		})
-	}, [uiStore.grabbing])
+	})
 
 	return (
 		<div
 			className={classnames('app', {
-				grabbing: Boolean(uiStore.grabbing),
+				grabbing: uiStore.isDnd,
+				darkmode: uiStore.darkmode,
 			})}
-			onMouseUp={() => {
-				if (uiStore.grabbing) {
-					uiStore.grabbing(null)
-					uiStore.grabbing = null
-				}
-			}}
+			onMouseUp={() => uiStore.endDnd()}
 			onMouseMove={({ clientX: x, clientY: y }) => {
-				if (uiStore.grabbing) {
-					uiStore.grabbing({ x, y }) // report mouse pos to update bullet pos
-					if (treeState)
-						for (const { line, top, left } of treeState) {
-							if (y < top) {
-								console.log(line.title)
-								break
-							}
-						}
+				if (uiStore.isDnd) {
+					uiStore.moveDnd({ x, y }) // report mouse pos to update bullet pos
 				}
 			}}
 		>
@@ -79,6 +64,7 @@ const App: React.FC = observer(() => {
 							<React.Fragment key={i}>
 								{i > 0 && '>'}
 								<a
+									href="#TBD"
 									className="app__breadcrumb-title"
 									onClick={() => {
 										uiStore.setDoc(l)
@@ -91,6 +77,12 @@ const App: React.FC = observer(() => {
 					})}
 				</div>
 				<button className="showCompleted">Show completed</button>
+				<button
+					className="darkmode"
+					onClick={() => (uiStore.darkmode = !uiStore.darkmode)}
+				>
+					Dark Mode
+				</button>
 				<button className="rtl" onClick={() => (uiStore.rtl = !uiStore.rtl)}>
 					RTL
 				</button>
@@ -133,7 +125,7 @@ const App: React.FC = observer(() => {
 })
 
 export default App
-
+/* 
 const breadcrumbSeperator = () => (
 	<svg width="5" height="8" viewBox="0 0 5 8" fill="none">
 		<path
@@ -175,3 +167,4 @@ const cogSvg = () => (
 		></path>
 	</svg>
 )
+ */
