@@ -49,10 +49,16 @@ const App: React.FC = observer(() => {
 				grabbing: uiStore.isDnd,
 				darkmode: uiStore.darkmode,
 			})}
-			onMouseUp={() => uiStore.endDnd()}
+			onMouseUp={() => {
+				uiStore.endDnd()
+				uiStore.endMultipleSelect()
+			}}
 			onMouseMove={({ clientX: x, clientY: y }) => {
 				if (uiStore.isDnd) {
 					uiStore.moveDnd({ x, y }) // report mouse pos to update bullet pos
+				}
+				if (uiStore.isMultipleSelecting) {
+					uiStore.moveMultipleSelect({ x, y })
 				}
 			}}
 		>

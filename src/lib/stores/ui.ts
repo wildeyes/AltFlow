@@ -25,7 +25,11 @@ class Store {
 	@observable private updateMousePos: (MousePosUpdater) | null = null
 	@observable private _doc: Line = dataStore.home
 	@observable public droppingStatus: DroppingStatus | null = null
-	private DOMTreeState: TreeState[] | null = null
+
+	@observable private msLine: Line[] = []
+
+	private dndTreeState: TreeState[] | null = null
+
 
 	@computed get isDnd() {
 		return Boolean(this.updateMousePos)
@@ -34,7 +38,7 @@ class Store {
 		this.updateMousePos = updateMousePos
 		this.grabbing = grabbing
 		console.log('Updating tree state for updateMousePos...')
-		this.DOMTreeState = (function recurse(rootline: Line): TreeState[] {
+		this.dndTreeState = (function recurse(rootline: Line): TreeState[] {
 			return flatten(
 				rootline.children.map(line => {
 					if (grabbing === line) return []
@@ -55,9 +59,9 @@ class Store {
 		})(this.doc)
 	}
 	moveDnd(pos: Mouse) {
-		if (this.updateMousePos && this.DOMTreeState) {
+		if (this.updateMousePos && this.dndTreeState) {
 			this.updateMousePos(pos)
-			const treeState = this.DOMTreeState
+			const treeState = this.dndTreeState
 			const { x, y } = pos
 
 			let droppingStatus: DroppingStatus | undefined
@@ -105,8 +109,39 @@ class Store {
 			}
 			this.droppingStatus = null
 		}
-		if (this.DOMTreeState) this.DOMTreeState = null
+		if (this.dndTreeState) this.dndTreeState = null
 	}
+
+	@computed get isMultipleSelecting() {
+		return Boolean(this.msLine)
+	}
+	startMultipleSelect(line: Line) {
+		this.msLine.push(line)
+		console.log('Updating tree state for startMultipleSelect...')
+	}
+	moveMultipleSelect({ x, y }: Mouse) {
+		const line = this.msLine[this.msLine.length - 1]
+
+		if(line) {
+			const { top, bottom } = line.getInputDOMElement().getBoundingClientRect()
+			if (this.msLine.length) {
+				const up = this.msLine.length === 1 ? top - 25/4 : 
+				const down = this.msLine.length === 1 ? bottom + 25/3 : 
+			if (y < up) {
+				line.addedToSelection = true
+			} else if(y > down){
+				line.addedToSelection = true
+			}
+		}
+	}
+	}
+	endMultipleSelect() {
+		for(let i = this.msLine.length - 1; i >= 0; i++) {
+			this.msLine[i].addedToSelection = false
+			this.msLine.pop()
+		}
+	}
+
 	setDoc(value: Line | null) {
 		if (!value) this._doc = dataStore.home
 		else this._doc = value
@@ -115,6 +150,7 @@ class Store {
 		if (this._doc) return this._doc
 		else return dataStore.home
 	}
+
 	animateNope() {
 		console.log('TBD cute animation showing you cant do that')
 	}

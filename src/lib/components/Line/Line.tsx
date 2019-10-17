@@ -211,6 +211,7 @@ export const LineEle = observer(
 						onKeyDown={event => handleKeyDown(index, event)}
 						ref={titleRef}
 						onFocus={() => setIsEditingNotes(false)}
+						onMouseDown={() => uiStore.startMultipleSelect(line)}
 					/>
 					{line.shouldDisplayNotes && (
 						<Textarea
