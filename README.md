@@ -1,12 +1,14 @@
 # AltFlow
 
-Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker](https://workflowy.com/list-maker/))clone.
+[Latest working version here](altflow.hackd.now.sh). WIP
+
+Dynalist / Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker](https://workflowy.com/list-maker/))clone.
 
 ## Roadmap
 
-- [V] Basic list manipulation.
-- [V] (Feature Parity) Drag and drop
-- [V] dark mode
+- [X] Basic list manipulation.
+- [X] (Feature Parity) Drag and drop
+- [X] dark mode
 - [ ] (Feature Parity) Multiple selection
 - [ ] (Feature Parity) Nice animations
 - [ ] RTL per bullet
