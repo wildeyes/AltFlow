@@ -25,15 +25,15 @@ class Store {
 	@observable private updateMousePos: (MousePosUpdater) | null = null
 	@observable private _doc: Line = dataStore.home
 	@observable public droppingStatus: DroppingStatus | null = null
-
 	@observable private msLine: Line[] = []
 
+	private rootLineMultipleSelect: Line | null = null
 	private dndTreeState: TreeState[] | null = null
-
 
 	@computed get isDnd() {
 		return Boolean(this.updateMousePos)
 	}
+
 	startDnd(grabbing: Line, updateMousePos: MousePosUpdater) {
 		this.updateMousePos = updateMousePos
 		this.grabbing = grabbing
@@ -112,36 +112,75 @@ class Store {
 		if (this.dndTreeState) this.dndTreeState = null
 	}
 
-	@computed get isMultipleSelecting() {
-		return Boolean(this.msLine)
-	}
 	startMultipleSelect(line: Line) {
-		this.msLine.push(line)
+		this.rootLineMultipleSelect = line
 		console.log('Updating tree state for startMultipleSelect...')
 	}
 	moveMultipleSelect({ x, y }: Mouse) {
-		const line = this.msLine[this.msLine.length - 1]
+		if (this.rootLineMultipleSelect) {
+			const {
+				top: firstLineTop,
+				bottom: firstLineBottom,
+			} = this.rootLineMultipleSelect
+				.getInputDOMElement()
+				.getBoundingClientRect()
+			const draggingDownards = firstLineBottom < y
+			const draggingUpwards = firstLineTop > y
+			if (this.msLine.length <= 1) {
+				if (draggingDownards || draggingUpwards) {
+					this.msLine.push(this.rootLineMultipleSelect)
+				} else {
+					this.msLine.pop()
+				}
+			}
+			if (this.msLine.length >= 1) {
+				const lastLine = this.msLine[this.msLine.length - 1]
 
-		if(line) {
-			const { top, bottom } = line.getInputDOMElement().getBoundingClientRect()
-			if (this.msLine.length) {
-				const up = this.msLine.length === 1 ? top - 25/4 : 
-				const down = this.msLine.length === 1 ? bottom + 25/3 : 
-			if (y < up) {
-				line.addedToSelection = true
-			} else if(y > down){
-				line.addedToSelection = true
+				if (draggingUpwards) {
+					const nextLine = lastLine.previousSibling
+					if (nextLine && y < getLineHalfCoordinate(nextLine))
+						this.msLine.push(nextLine)
+					else if (
+						y > getLineHalfCoordinate(lastLine) &&
+						this.msLine.length > 1
+					)
+						this.msLine.pop()
+				} else if (draggingDownards) {
+					const nextLine = lastLine.nextSibling
+					if (nextLine && y > getLineHalfCoordinate(nextLine))
+						this.msLine.push(nextLine)
+					else if (
+						y < getLineHalfCoordinate(lastLine) &&
+						this.msLine.length > 1
+					)
+						this.msLine.pop()
+				}
+				function getLineHalfCoordinate(line: Line) {
+					const {
+						top,
+						height,
+					} = line.getInputDOMElement().getBoundingClientRect()
+					return top + height / 2 // pass this point with the mouse to select the line
+				}
 			}
 		}
 	}
+	stopMultipleSelect() {
+		console.log('stopping multiple select')
+		this.rootLineMultipleSelect = null
 	}
-	endMultipleSelect() {
-		for(let i = this.msLine.length - 1; i >= 0; i++) {
-			this.msLine[i].addedToSelection = false
+	clearMultipleSelect() {
+		console.log('clearing multiple select')
+		for (let i = this.msLine.length - 1; i >= 0; i--) {
 			this.msLine.pop()
 		}
 	}
-
+	isMultipleSelecting(line: Line) {
+		return Boolean(this.rootLineMultipleSelect)
+	}
+	isLineMultipleSelected(line: Line) {
+		return this.msLine.includes(line)
+	}
 	setDoc(value: Line | null) {
 		if (!value) this._doc = dataStore.home
 		else this._doc = value

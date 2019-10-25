@@ -11,17 +11,28 @@
     }
     text-decoration: line-through;
   }
-  &.overline:before {
+  @mixin before {
     content: "";
-    background-color: $line-hover;
-    .darkmode & {
-      background-color: #353535;
-    }
+
     position: absolute;
     width: 100%;
     height: 100%;
     border-radius: 5px;
     z-index: 0;
+  }
+  &.overline:before {
+    @include before;
+    background-color: $line-hover;
+    .darkmode & {
+      background-color: #353535;
+    }
+  }
+  &.addedToSelection:before {
+    @include before;
+    background-color: $line-hover;
+    .darkmode & {
+      background-color: #353535;
+    }
   }
 }
 .line__content {

@@ -16,29 +16,46 @@ const App: React.FC = observer(() => {
 			console.log('Inserting dummy data.')
 			if (window.location.href.includes('localhost')) {
 				const list1 = [
-					new Line({ title: '1' }),
-					new Line({ title: '2' }),
-					new Line({ title: '3' }),
-					new Line({ title: '4' }),
-					new Line({ title: '5' }),
+					new Line({ title: '1', created: new Date(new Date().getTime() + 1) }),
+					new Line({ title: '2', created: new Date(new Date().getTime() + 2) }),
+					new Line({ title: '3', created: new Date(new Date().getTime() + 3) }),
+					new Line({ title: '4', created: new Date(new Date().getTime() + 4) }),
+					new Line({ title: '5', created: new Date(new Date().getTime() + 5) }),
 				]
-				// const list2 = [
-				// 	new Line({ title: '2.1' }),
-				// 	new Line({ title: '2.2' }),
-				// 	new Line({ title: '2.3' }),
-				// 	new Line({ title: '2.4' }),
-				// 	new Line({ title: '2.5' }),
-				// ]
+				const list2 = [
+					new Line({
+						title: '2.1',
+						created: new Date(new Date().getTime() + 11),
+					}),
+					new Line({
+						title: '2.2',
+						created: new Date(new Date().getTime() + 12),
+					}),
+					new Line({
+						title: '2.3',
+						created: new Date(new Date().getTime() + 13),
+					}),
+					new Line({
+						title: '2.4',
+						created: new Date(new Date().getTime() + 14),
+					}),
+					new Line({
+						title: '2.5',
+						created: new Date(new Date().getTime() + 15),
+					}),
+				]
 				dataStore.home.addChildAtEnd(...list1)
-				// list2[1].addChildAtEnd(...list2)
+				list1[1].addChildAtEnd(...list2)
 			} else {
 				dataStore.home.addChildAtEnd(new Line({ title: 'Hello World!' }))
 			}
 		}
 
 		window.addEventListener('keydown', ({ keyCode }) => {
-			if (uiStore.isDnd && KeyCode.ESC === keyCode) {
-				uiStore.endDnd(true)
+			if (KeyCode.ESC === keyCode) {
+				if (uiStore.isDnd) uiStore.endDnd(true)
+				uiStore.stopMultipleSelect()
+				uiStore.clearMultipleSelect()
 			}
 		})
 	})
@@ -51,7 +68,7 @@ const App: React.FC = observer(() => {
 			})}
 			onMouseUp={() => {
 				uiStore.endDnd()
-				uiStore.endMultipleSelect()
+				uiStore.stopMultipleSelect()
 			}}
 			onMouseMove={({ clientX: x, clientY: y }) => {
 				if (uiStore.isDnd) {

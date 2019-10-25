@@ -22,6 +22,8 @@ export const LineEle = observer(
 		const [mousePos, setMousePos] = useState<Mouse | null>(null)
 		const [dropMaybeMe, dropPos] = uiStore.droppingStatus || [null, 'TOP']
 
+		const addedToSelection = uiStore.isLineMultipleSelected(line)
+
 		// eslint-disable-next-line
 		useEffect(() => {
 			if (line.shouldFocus) {
@@ -168,6 +170,7 @@ export const LineEle = observer(
 					completed: line.completed,
 					starred: line.starred,
 					overline: overline && !uiStore.isDnd,
+					addedToSelection,
 				})}
 			>
 				<div
@@ -211,7 +214,10 @@ export const LineEle = observer(
 						onKeyDown={event => handleKeyDown(index, event)}
 						ref={titleRef}
 						onFocus={() => setIsEditingNotes(false)}
-						onMouseDown={() => uiStore.startMultipleSelect(line)}
+						onMouseDown={() => {
+							uiStore.clearMultipleSelect()
+							uiStore.startMultipleSelect(line)
+						}}
 					/>
 					{line.shouldDisplayNotes && (
 						<Textarea
@@ -232,7 +238,6 @@ export const LineEle = observer(
 						))}
 						<AddChildBtn
 							onClick={() => line.createChild({ shouldFocus: true })}
-							data-id={line.getIdString()}
 							className="line__addChildBtn"
 						/>
 					</div>

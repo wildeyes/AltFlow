@@ -3,7 +3,6 @@ import { LineJSONType, ShouldFocus } from '../types'
 
 export class Line {
 	public shouldFocus: ShouldFocus
-	public addedToSelection: boolean
 	constructor({
 		shouldFocus = false,
 		flags = {
@@ -16,7 +15,6 @@ export class Line {
 		starred = false,
 		children = [],
 		parent = undefined,
-		addedToSelection = false
 	}: Partial<Line> = {}) {
 		this.flags = flags
 		this.title = title
@@ -28,7 +26,6 @@ export class Line {
 		// private
 		this._parent = parent
 		this.shouldFocus = shouldFocus
-		this.addedToSelection = addedToSelection
 	}
 	flags = {
 		[FLAG_HOME]: false,
@@ -126,8 +123,8 @@ export class Line {
 	}
 	addChildAtEnd(...lineList: Line[]) {
 		lineList.forEach(l => {
-			this.children.push(l)
 			l.parent = this
+			this.children.push(l)
 		})
 	}
 	addChildAtStart(...lineList: Line[]) {
@@ -190,6 +187,9 @@ export class Line {
 		obj.children = json.children.map(d => Line.fromJSON(d, obj))
 
 		return obj
+	}
+	toString() {
+		return `Line: ${this.title}`
 	}
 }
 

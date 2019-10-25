@@ -9,7 +9,7 @@ Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker
 - [x] Basic list manipulation.
 - [x] (Feature Parity) Drag and drop
 - [x] dark mode
-- [ ] (Feature Parity) Multiple selection
+- [x] (Feature Parity) Multiple selection
 - [ ] Better kbs support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
 - [ ] Use any storage as backend (starting with google drive)
 - [ ] (Feature Parity) Nice animations
