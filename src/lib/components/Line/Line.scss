@@ -1,0 +1,125 @@
+@import "../../common.scss";
+
+.line__container {
+  min-height: 30px;
+  position: relative;
+
+  &.completed {
+    color: #a8aeb1;
+    input {
+      color: #a8aeb1;
+    }
+    text-decoration: line-through;
+  }
+  @mixin before {
+    content: "";
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    z-index: 0;
+  }
+  &.overline:before {
+    @include before;
+    background-color: $line-hover;
+    .darkmode & {
+      background-color: #353535;
+    }
+  }
+  &.addedToSelection:before {
+    @include before;
+    background-color: $line-hover;
+    .darkmode & {
+      background-color: #353535;
+    }
+  }
+}
+.line__content {
+  z-index: 1;
+  display: grid;
+  align-items: center;
+  grid-template-rows: 30px 1fr;
+  grid-template-columns: $bullet-width 1fr;
+  justify-content: flex-start;
+  position: relative;
+}
+.line__title {
+  white-space: pre-wrap;
+  line-height: 24px;
+  overflow-wrap: break-word;
+  position: relative;
+  user-select: text;
+  animation-delay: 0.3s;
+  animation-iteration-count: 1;
+  font-size: 15px;
+  line-height: 24px;
+  @extend .start-second-row;
+}
+input {
+  color: rgb(42, 49, 53);
+  .darkmode & {
+    color: #c3c3c3;
+  }
+  background-color: transparent;
+}
+
+.line__bullet {
+  cursor: pointer;
+  z-index: 1;
+  background-color: $bullet;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  justify-self: center;
+
+  .darkmode & {
+    background-color: #c3c3c3;
+  }
+  &.overline,
+  &.grabbing {
+    border: 5px solid $bullet-hover;
+  }
+}
+.line__notes {
+  border: 0;
+  resize: none;
+  -webkit-appearance: none;
+  padding: 0;
+  line-height: 17px;
+  font-size: 13px;
+  color: rgb(134, 140, 144);
+  outline: none;
+  background-color: transparent;
+  @extend .start-second-row;
+}
+.line__children {
+  grid-column: span 2 / auto;
+  margin-inline-start: 12px;
+  padding-inline-start: 25px;
+  border-inline-start: 1px solid rgb(236, 238, 240);
+  position: relative;
+}
+
+.start-second-row {
+  margin-inline-start: 8px;
+  grid-column-start: 2;
+}
+
+.line__addChildBtn {
+  opacity: 0;
+  position: absolute;
+  bottom: 4px;
+  left: -1px;
+  transform: translateX(-50%);
+  &:hover {
+    opacity: 0.7;
+  }
+}
+.line__dnd-top {
+  border-top: 2px solid yellow;
+}
+.line__dnd-bottom,
+.line__dnd-children {
+  border-bottom: 2px solid yellow;
+}
