@@ -41,8 +41,8 @@ Use the issue tracker to ask questions about the code, report bugs and get help.
 
 ## Alternatives
 
-- ([Workflowy](https://workflowy.com/online-notepad/)
-- ([Dynalist](https://dynalist.io/))
+- [Workflowy](https://workflowy.com/online-notepad/)
+- [Dynalist](https://dynalist.io/)
 
 ## Contributers
 
