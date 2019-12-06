@@ -18,15 +18,15 @@ Use the issue tracker to ask questions about the code, report bugs and get help.
 - [x] Drag and drop.
 - [x] Dark mode.
 - [x] Multiple selection.
-- [ ] Keyboard shortcuts support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
-- [ ] Use google drive as backend and sign in, but allow people to use locally without sign in.
+- [ ] Keyboard shortcuts support, with a pop out panel.
 - [ ] Nice animations.
-- [ ] "Share" bullets via email.
 - [ ] Hashtags.
   - Clicking a hashtag puts in the search
 - [ ] Search
   - Recently used searches
 - [ ] At Signs.
+- [ ] Use google drive as backend and sign in, but allow people to use locally without sign in.
+- [ ] "Share" bullets via email.
 
 #### "Down the line" features
 
