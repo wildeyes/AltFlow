@@ -19,25 +19,24 @@ Use the issue tracker to ask questions about the code, report bugs and get help.
 - [x] Dark mode.
 - [x] Multiple selection.
 - [ ] Keyboard shortcuts support, with a pop out panel.
-- [ ] Nice animations.
-- [ ] Hashtags.
-  - Clicking a hashtag puts in the search
-- [ ] Search
-  - Recently used searches
-- [ ] At Signs.
+- [ ] Better Design + Animations.
+- [ ] Hashtags and at signs.
+- [ ] Search.
 - [ ] Use google drive as backend and sign in, but allow people to use locally without sign in.
 - [ ] "Share" bullets via email.
+- [ ] markdown formatting.
+- [ ] daily summary email.
+- [ ] Themes / Custom CSS.
+- [ ] ctrl-z.
 
 #### "Down the line" features
 
 - [ ] Flutter Apps
   - [ ] Integrate with Siri
   - [ ] Integrate with Google Assistant (Help required)
-- [ ] Themes
 - [ ] Expose outward API to allow plugins via a userscript like interface.
 - [ ] Plugin Store, easy way to download, remove and preview plugins.
 - [ ] iCal integration.
-- [ ] GDPR?
 
 ## Alternatives
 
