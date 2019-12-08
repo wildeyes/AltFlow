@@ -18,26 +18,25 @@ Use the issue tracker to ask questions about the code, report bugs and get help.
 - [x] Drag and drop.
 - [x] Dark mode.
 - [x] Multiple selection.
-- [ ] Keyboard shortcuts support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
+- [ ] Keyboard shortcuts support, with a pop out panel.
+- [ ] Better Design + Animations.
+- [ ] Hashtags and at signs.
+- [ ] Search.
 - [ ] Use google drive as backend and sign in, but allow people to use locally without sign in.
-- [ ] Nice animations.
 - [ ] "Share" bullets via email.
-- [ ] Hashtags.
-  - Clicking a hashtag puts in the search
-- [ ] Search
-  - Recently used searches
-- [ ] At Signs.
+- [ ] markdown formatting.
+- [ ] daily summary email.
+- [ ] Themes / Custom CSS.
+- [ ] ctrl-z.
 
 #### "Down the line" features
 
 - [ ] Flutter Apps
   - [ ] Integrate with Siri
   - [ ] Integrate with Google Assistant (Help required)
-- [ ] Themes
 - [ ] Expose outward API to allow plugins via a userscript like interface.
 - [ ] Plugin Store, easy way to download, remove and preview plugins.
 - [ ] iCal integration.
-- [ ] GDPR?
 
 ## Alternatives
 
