@@ -64,10 +64,10 @@ export const LineEle = observer(
 					KeyCode.ENTER,
 					() => {
 						if (ctrlKey) {
-							line.completed = true
+							line.completed = !line.completed
 							;(function recurse(b: Line) {
 								b.children.forEach(bb => {
-									bb.completed = true
+									bb.completed = line.completed
 									recurse(bb)
 								})
 							})(line)
@@ -203,11 +203,7 @@ export const LineEle = observer(
 						}
 					/>
 					<input
-						className={classnames('line__title title-input', {
-							[`animated ${animateRtl('fadeOut', rtl)}`]: line.completed,
-							'line__dnd-children':
-								dropMaybeMe === line && dropPos === 'CHILDREN',
-						})}
+						className={classnames(line.completed?"":'line__title title-input')}
 						data-id={line.getIdString()}
 						value={line.title}
 						onChange={({ currentTarget: { value } }) => (line.title = value)}
