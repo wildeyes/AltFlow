@@ -1,29 +1,49 @@
 # AltFlow
 
-[Latest working version here](altflow.hackd.now.sh). WIP
+An outlining app that aligns with how you think.
 
-Workflowy ([Online Notepad](https://workflowy.com/online-notepad/) / [List Maker](https://workflowy.com/list-maker/)) clone.
+_[Latest working version here](altflow.hackd.now.sh). WIP_
 
-## Roadmap
+## Developing Locally / Contributing
+
+See CONTRIBUTING.md.
+
+## Bugs / Help
+
+Use the issue tracker to ask questions about the code, report bugs and get help.
+
+## Next Feature Roadmap
 
 - [x] Basic list manipulation.
-- [x] (Feature Parity) Drag and drop
-- [x] dark mode
-- [x] (Feature Parity) Multiple selection
-- [ ] Use any storage as backend (maybe start with google drive?)
-- [ ] Better kbs support: multiple cursors, move multiple items with ctrl, make moving of cursor relative to the text, use native kbs for search, ctrl-s pops up a nice message saying everything is autosaved,
-- [ ] (Feature Parity) Nice animations
-- [ ] (Feature Parity) Share
-- [ ] (Feature Parity) Hashtags.
-  - Clicking a hashtag puts in the search
-- [ ] (Feature Parity) Search
-  - Recently used searches
-- [ ] (Feature Parity) At Signs.
-- [ ] (Feature Parity) Flutter Apps
+- [x] Drag and drop.
+- [x] Dark mode.
+- [x] Multiple selection.
+- [ ] Keyboard shortcuts support, with a pop out panel.
+- [ ] Better Design + Animations.
+- [ ] Hashtags and at signs.
+- [ ] Search.
+- [ ] Use google drive as backend and sign in, but allow people to use locally without sign in.
+- [ ] "Share" bullets via email.
+- [ ] markdown formatting.
+- [ ] daily summary email.
+- [ ] Themes / Custom CSS.
+- [ ] ctrl-z.
+
+#### "Down the line" features
+
+- [ ] Flutter Apps
   - [ ] Integrate with Siri
   - [ ] Integrate with Google Assistant (Help required)
-- [ ] RTL per bullet ?
-- [ ] Themes
 - [ ] Expose outward API to allow plugins via a userscript like interface.
 - [ ] Plugin Store, easy way to download, remove and preview plugins.
 - [ ] iCal integration.
+
+## Alternatives
+
+- [Workflowy](https://workflowy.com/online-notepad/)
+- [Dynalist](https://dynalist.io/)
+
+## Contributers
+
+- Me
+- You maybe? :)
