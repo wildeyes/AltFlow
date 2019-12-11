@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
+
 import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
@@ -124,8 +125,10 @@ const Altflow: React.FC = observer(() => {
 						<input
 							className="doc__title title-input"
 							onChange={({
-								currentTarget: { textContent: value },
-							}: React.FormEvent) => (uiStore.doc.title = value || '')}
+								currentTarget: { value },
+							}: React.FormEvent<HTMLInputElement>) =>
+								(uiStore.doc.title = value || '')
+							}
 							value={uiStore.doc.title}
 							placeholder="Untitled"
 						/>
