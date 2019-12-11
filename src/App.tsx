@@ -6,9 +6,10 @@ import { KeyCode } from './lib/browser/KeyCodes'
 import { Textarea } from './lib/common'
 import { AddChildBtn } from './lib/components/AddChildBtn/AddChildBtn'
 import { LineEle } from './lib/components/Line/Line'
-import { store as dataStore } from './lib/stores/data'
+import { store as dataStore, localstorageKey } from './lib/stores/data'
 import { FLAG_HOME, Line } from './lib/stores/Line'
 import { store as uiStore } from './lib/stores/ui'
+import { setReactionScheduler } from 'mobx/lib/internal'
 
 const App: React.FC = observer(() => {
 	useEffect(() => {
@@ -109,7 +110,10 @@ const App: React.FC = observer(() => {
 				<button className="rtl" onClick={() => (uiStore.rtl = !uiStore.rtl)}>
 					RTL
 				</button>
-				<button className="search">search</button>
+				<button className="search" onClick={() => {
+					uiStore.search("yaniv");
+				}
+				}>search</button>
 				<button className="settings">settings</button>
 			</header>
 			<section
@@ -129,15 +133,17 @@ const App: React.FC = observer(() => {
 						{uiStore.doc.shouldDisplayNotes && (
 							<Textarea
 								className="doc__notes notes-textarea"
-								onKeyDown={(e: React.FormEvent) => {}}
+								onKeyDown={(e: React.FormEvent) => { }}
 								value={uiStore.doc.notes!}
 							/>
 						)}
 					</section>
 				)}
-				{uiStore.doc.children.map((b, i) => (
-					<LineEle rtl={uiStore.rtl} index={i} line={b} key={i} />
-				))}
+				{
+					uiStore.doc.children.map((b, i) => (
+						<LineEle rtl={uiStore.rtl} index={i} line={b} key={i} />
+					))
+				}
 				<AddChildBtn
 					onClick={() => uiStore.doc.createChild({ shouldFocus: true })}
 				/>
@@ -148,7 +154,7 @@ const App: React.FC = observer(() => {
 })
 
 export default App
-/* 
+/*
 const breadcrumbSeperator = () => (
 	<svg width="5" height="8" viewBox="0 0 5 8" fill="none">
 		<path

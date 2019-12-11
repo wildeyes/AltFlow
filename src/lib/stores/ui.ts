@@ -112,6 +112,46 @@ class Store {
 		if (this.dndTreeState) this.dndTreeState = null
 	}
 
+	searchLines: Line[] = [];
+
+	search(searchValue: string) {
+		var home = dataStore.list;
+		this.searchRec(home, searchValue);
+		var line = new Line();
+		line.children = this.searchLines;
+		this.setDoc(line);
+		console.log(this.searchLines)
+	}
+
+	searchRec(searchLines: Line[], searchValue: string) {
+		searchLines.forEach(line => {
+			this.lineFound(line, searchValue);
+			if (line.children.length == 0) {
+				return;
+			}
+			this.searchRec(line.children, searchValue);
+		})
+	}
+
+	lineFound(searchLine: Line, searchValue: string) {
+		if (searchLine.title.includes(searchValue) || (searchLine.notes && searchLine.notes.includes(searchValue))) {
+
+			var lineparent = new Line()
+			var line = new Line();
+			line.copyCtorWithoutChildren(searchLine);
+			do {
+				if (line.parent)
+					lineparent = line.parent;
+				lineparent.children = [line]
+				if (lineparent.parent)
+					lineparent = lineparent.parent;
+				if (line.parent)
+					line = line.parent;
+			} while (lineparent.title !== "Home" && lineparent.parent)
+			this.searchLines.push(line);
+		}
+	}
+
 	startMultipleSelect(line: Line) {
 		this.rootLineMultipleSelect = line
 		console.log('Updating tree state for startMultipleSelect...')
@@ -208,7 +248,7 @@ if (LSstore) {
 	store.darkmode = LSstore.darkmode
 }
 
-;(window as any)['store'] = store
+; (window as any)['store'] = store
 autorun(() => {
 	window.localStorage.setItem(
 		localstorageKey,

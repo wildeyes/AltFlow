@@ -27,6 +27,39 @@ export class Line {
 		this._parent = parent
 		this.shouldFocus = shouldFocus
 	}
+	copyCtorWithChild(line:Line, child:Line): void{
+		this.shouldFocus = line.shouldFocus
+		this.flags = line.flags
+		this.title = line.title
+		this.notes = line.notes
+		this.created = line.created
+		this.modified = line.modified
+		this.starred = line.starred
+		this.children = [child]
+		this.parent = line.parent
+	}
+	copyCtorWithoutChildren(line:Line): void{
+		this.shouldFocus = line.shouldFocus
+		this.flags = line.flags
+		this.title = line.title
+		this.notes = line.notes
+		this.created = line.created
+		this.modified = line.modified
+		this.starred = line.starred
+		this.children = []
+		this.parent = line.parent
+	}
+	copyCtor(line:Line): void{
+		this.shouldFocus = line.shouldFocus
+		this.flags = line.flags
+		this.title = line.title
+		this.notes = line.notes
+		this.created = line.created
+		this.modified = line.modified
+		this.starred = line.starred
+		this.children = line.children
+		this.parent = line.parent
+	}
 	flags = {
 		[FLAG_HOME]: false,
 	}
