@@ -12,6 +12,7 @@
 		"@types/react-dom": "16.9.0",
 		"animate.css": "^3.7.2",
 		"classnames": "^2.2.6",
+		"express": "^4.17.1",
 		"husky": "^3.1.0",
 		"lint-staged": "^9.5.0",
 		"lodash": "^4.17.15",
@@ -21,7 +22,7 @@
 		"prettier": "^1.19.1",
 		"react": "^16.9.0",
 		"react-dom": "^16.9.0",
-		"react-scripts": "3.1.1",
+		"react-scripts": "^3.3.0",
 		"react-textarea-autosize": "^7.1.0",
 		"typescript": "3.6.3",
 		"use-keyboard-shortcuts": "^1.0.7"
@@ -35,7 +36,7 @@
 		"*.tsx?": "prettier --write"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
@@ -54,5 +55,10 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
+	},
+	"devDependencies": {
+		"@types/react-textarea-autosize": "^4.3.4",
+		"cross-env": "^6.0.3",
+		"ts-node": "^8.4.1"
 	}
 }
