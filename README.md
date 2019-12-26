@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/d3s5vedr6dwuc7yh/branch/master?svg=true)](https://ci.appveyor.com/project/wildeyes/altflow/branch/master)
+
 # AltFlow
 
 An outlining app that aligns with how you think.
