@@ -1,5 +1,6 @@
 import { autorun, computed, observable } from 'mobx'
 import { FLAG_HOME, Line } from './Line'
+import devManager from './devManager'
 // shouldnt import from uiStore
 export const localstorageKey = '__altflow_data'
 
@@ -9,6 +10,7 @@ class Store {
 		return this.home.children
 	}
 }
+export type StoreType = Store
 
 export const store = new Store()
 
@@ -31,3 +33,7 @@ autorun(() => {
 		})
 	)
 })
+
+if (process.env.NODE_ENV === 'development') {
+	devManager.dataStore = store
+}
